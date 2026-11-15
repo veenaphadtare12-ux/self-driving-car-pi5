@@ -30,3 +30,14 @@ NumPy/picamera2 conflict: did not appear (`import picamera2` works with NumPy 2.
 **Unit tests**
 - `test_decision.py`: Ran 59 tests, OK
 - `test_control.py`: Ran 16 tests, OK (uses a fake lgpio; no real GPIO touched)
+
+## Stage 2: Motors (2026-11-15) — PARTIAL (hardware fault found)
+
+Wheels lifted. Runs at 30 % with the one-step runner (forward/backward/left 3–5 s each).
+- Driver: TB6612, two channels (one per side), so both wheels on a side get the same signal.
+- FORWARD and BACKWARD: right front, right back, left back follow the command.
+  **Left front spins the opposite way** to left back.
+- Conclusion: left front motor is wired with reversed polarity (soldered). Not fixable in
+  config.py; `LEFT_INVERT`/`RIGHT_INVERT` stay False. Fix: re-solder the left front motor's
+  two wires swapped, then re-run FORWARD/BACKWARD/LEFT/RIGHT.
+- RIGHT step not yet run.
