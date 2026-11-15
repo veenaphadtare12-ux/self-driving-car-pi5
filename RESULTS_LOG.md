@@ -105,3 +105,7 @@ live ToF/US, YOLO on. No motors (`--video` forces DryRunMotors). Log: logs/run_2
 `test_camera.py` → test_photo.jpg 640x480x3 uint8 OK. Photo is dim with a purple/green cast
 (low light / possible NoIR module); CAM_FORMAT RGB888 → BGR in OpenCV per camera.py, believed correct.
 To do: confirm colours on a known red/blue object; optionally drop the unused cam0 overlay.
+Colour check (2026-11-15, live frame from `stream_camera.py`): orange wrist thread shows orange, blue
+cloth blue, skin tones normal → R/B **not swapped**, CAM_FORMAT RGB888 is correct. Overall blue cast =
+auto white balance in dim indoor light, not a channel bug. **Stage 2: PASS.**
+`stream_camera.py` added: browser MJPEG preview on :8000 (centre lines; `--flip` for 180°).
