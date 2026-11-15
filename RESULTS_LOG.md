@@ -87,3 +87,14 @@ Run 3 (after rewiring/clearing the front): ToF init OK.
 - Object at 400 mm: first samples ToF 418, US FL 414, FR 399 → within ±50. The object then moved
   (in to ~160 mm, out to ~330), so the summary medians/"error -110" are not meaningful; all three
   sensors tracked each other within ~10–30 mm through the sweep. No config change.
+
+## Offline stage 6: main_demo dry-run on old frames (2026-11-15) — RUNS; steering too twitchy
+`main_demo.py --dry-run --video old_640.mp4` (old car_project frames at 640x480, looped 3x = 120 frames),
+live ToF/US, YOLO on. No motors (`--video` forces DryRunMotors). Log: logs/run_20261115_182513.csv.
+- Whole pipeline runs end to end: lane found in 120/120 (black-tape HSV), YOLO 0 dets, ToF live,
+  50–80 FPS (no camera wait), fans ON/OFF, clean exit.
+- **Steering jitter:** lane offset steady (median 1.5 px change/frame, p90 4.2 px) but commands swing
+  L=50/R=0 ↔ L=11/R=49; 30/120 frames steer opposite to the offset. Cause: STEER_KD=0.1 on px/s —
+  2 px of jitter at 75 FPS = 150 px/s → 15 steer vs P term 0.2×22 ≈ 4.
+  Replay of the same offsets at 30 FPS: KD 0.1 → 23 sign flips; KD 0.03 → 4; KD 0 → 0.
+  Recommendation: STEER_KD ≈ 0.03 as a starting point, finalise in stage 7.
