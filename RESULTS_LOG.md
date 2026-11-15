@@ -98,3 +98,10 @@ live ToF/US, YOLO on. No motors (`--video` forces DryRunMotors). Log: logs/run_2
   2 px of jitter at 75 FPS = 150 px/s → 15 steer vs P term 0.2×22 ≈ 4.
   Replay of the same offsets at 30 FPS: KD 0.1 → 23 sign flips; KD 0.03 → 4; KD 0 → 0.
   Recommendation: STEER_KD ≈ 0.03 as a starting point, finalise in stage 7.
+
+## Stage 2: camera (2026-11-15, after cable fix + reboot) — PASS (colour check pending)
+`rpicam-hello --list-cameras` → ov5647 2592x1944 on CAM1 (i2c@88000, bus 10). CAM0 port still logs
+`-121` (nothing plugged there — expected with the forced `dtoverlay=ov5647,cam0`).
+`test_camera.py` → test_photo.jpg 640x480x3 uint8 OK. Photo is dim with a purple/green cast
+(low light / possible NoIR module); CAM_FORMAT RGB888 → BGR in OpenCV per camera.py, believed correct.
+To do: confirm colours on a known red/blue object; optionally drop the unused cam0 overlay.
