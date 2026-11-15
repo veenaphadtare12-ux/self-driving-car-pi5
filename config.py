@@ -88,7 +88,7 @@ BRAKE_S = 0.3                 # stop(): active brake (IN1=IN2=1, PWM 100) this l
 # Steering (PD on lane offset in pixels; derivative in px/s)
 # ---------------------------------------------------------------------------
 STEER_KP = 0.2
-STEER_KD = 0.1
+STEER_KD = 0.03
 STEER_MAX = MAX_SPEED         # clamp on the steering term
 
 # ---------------------------------------------------------------------------
