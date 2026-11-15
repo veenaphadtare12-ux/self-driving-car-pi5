@@ -17,14 +17,16 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 GPIO_CHIP_CANDIDATES = (0, 4)
 
 # TB6612FNG x2, skid-steer, STBY tied to VCC
-LEFT_IN1, LEFT_IN2, LEFT_PWM = 27, 22, 12
-RIGHT_IN1, RIGHT_IN2, RIGHT_PWM = 23, 24, 13
+# Pins from ~/car_project/config/motors.yaml (confirmed 2026-10-13, wheels lifted).
+# LEFT/RIGHT = the car's real wheels seen from behind. IN1 = forward pin, IN2 = backward pin
+# (motors.py: positive speed -> IN1 high, IN2 low).
+LEFT_IN1, LEFT_IN2, LEFT_PWM = 23, 24, 13      # real left:  fwd 23, back 24, PWM 13
+RIGHT_IN1, RIGHT_IN2, RIGHT_PWM = 22, 27, 12   # real right: fwd 22, back 27, PWM 12
 PWM_FREQ_HZ = 1000
 
-# Polarity taken from ~/robotex_ai/robot_hardware.py, which drives forward
-# correctly: INVERT_RIGHT=True and then both sides negated. The net result is
-# that the left side is inverted and the right side is not.
-LEFT_INVERT = True
+# No inversion: IN1/IN2 above are already forward/backward per side (motors.yaml invert_left/right: false).
+# The old values (LEFT 27/22/12 inverted, RIGHT 23/24/13) drove forward correctly but had left/right mirrored.
+LEFT_INVERT = False
 RIGHT_INVERT = False
 LEFT_TRIM = 1.0     # scale one side down if the car drifts on a straight line
 RIGHT_TRIM = 1.0
