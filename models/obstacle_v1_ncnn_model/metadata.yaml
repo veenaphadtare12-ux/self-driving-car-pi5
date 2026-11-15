@@ -1,0 +1,25 @@
+description: Ultralytics YOLO26n model trained on C:\Users\Veena\self_driving_car_training\data\own_track_images\obstacles\roboflow_export\data.yaml
+author: Ultralytics
+date: '2026-11-14T01:45:45.569302+05:30'
+version: 8.4.157
+license: AGPL-3.0 License (https://ultralytics.com/license)
+docs: https://docs.ultralytics.com
+stride: 32
+task: detect
+head: Detect
+batch: 1
+imgsz:
+- 416
+- 416
+names:
+  0: animal
+  1: car
+  2: light_green
+  3: light_red
+  4: person
+  5: stop_sign
+args:
+  batch: 1
+  quantize: null
+channels: 3
+end2end: false

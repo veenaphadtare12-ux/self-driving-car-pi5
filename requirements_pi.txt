@@ -1,0 +1,12 @@
+# Install inside a venv created with --system-site-packages (see README_PI.md).
+# From apt (NOT pip): python3-picamera2  python3-lgpio  i2c-tools
+#
+# Same ultralytics version that exported the NCNN model (metadata.yaml: 8.4.157)
+ultralytics==8.4.157
+ncnn
+# VL53L5CX driver used by ~/robotex_ai/robot_hardware.py
+vl53l5cx-ctypes
+# MPU6050 (import mpu6050)
+mpu6050-raspberrypi
+smbus2
+# If `import picamera2` fails with "numpy.dtype size changed", run:  pip install "numpy<2"
