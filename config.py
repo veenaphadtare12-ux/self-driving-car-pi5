@@ -95,9 +95,11 @@ STEER_MAX = MAX_SPEED         # clamp on the steering term
 # Lane detection (tape)
 # ---------------------------------------------------------------------------
 # PLACEHOLDERS: tune with tune_hsv.py on a photo from the car's camera.
-# OpenCV HSV ranges: H 0..179, S 0..255, V 0..255. Default = white tape.
-HSV_LOWER = (0, 0, 180)
-HSV_UPPER = (179, 60, 255)
+# OpenCV HSV ranges: H 0..179, S 0..255, V 0..255. Track uses BLACK tape.
+# Starting point from old car_project frames (V<=80 found 20/20); retune with tune_hsv.py on live camera.
+# White tape would be (0, 0, 180) .. (179, 60, 255).
+HSV_LOWER = (0, 0, 0)
+HSV_UPPER = (179, 255, 80)
 
 # "two_lines": tape on both lane edges. Center = midpoint of left+right lines.
 # "center_line": a single tape line to follow. Center = the line itself.
