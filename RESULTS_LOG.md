@@ -46,6 +46,12 @@ Wheels lifted. Runs at 30 % with the one-step runner (forward/backward/left 3–
 `Picamera2()` → "No camera number 0 found"; `rpicam-hello --list-cameras` → "No cameras available!".
 Not detected at boot (camera_auto_detect=1). Camera worked earlier in car_project → likely ribbon
 cable loose/flipped. To do: power off, re-seat ribbon in CAM/DISP 0, re-run test_camera.py.
+**Update 17:50:** re-seated cable + 2 reboots, still none. Forced driver (camera_auto_detect=0,
+dtoverlay=ov5647 and ov5647,cam0; backup config.txt.bak_20261115_174404). Driver loads on both
+ports but `ov5647 10-0036` and `11-0036` both fail: `i2c read error, reg: 300a = -121`, and
+i2cdetect shows nothing at 0x36 on buses 10/11. The sensor does not answer on I2C at all → hardware:
+ribbon (contacts facing wrong way, not fully in, or damaged), or the camera board itself.
+Pi 5 needs the narrow 22-pin end at the Pi; a Pi 4-style 15-pin cable won't fit without an adapter.
 
 ## Stage 3: Distance sensors (2026-11-15) — PASS (one I2C dropout seen)
 i2cdetect: 0x29 (VL53L5CX), 0x68 (MPU6050). ToF ranging at 15 Hz; both ultrasonics in alert mode.
