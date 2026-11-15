@@ -8,6 +8,12 @@ Full control loop: camera -> lane (every frame) + YOLO (every N frames) + sensor
     python main_demo.py --video clip.mp4              # laptop: run on a recorded clip (implies --dry-run)
     python main_demo.py --lane ufld --dry-run         # lane backend: hough (default, config.LANE_BACKEND) or ufld
 
+Threaded runtime (runtime.py: camera / lane / detection threads + fixed-rate control loop):
+    python main_demo.py --threaded --dry-run --lane ufld          # headless; g = START, s = STOP
+    python main_demo.py --threaded --source FOLDER_OR_VIDEO       # replay at REPLAY_FPS, forces dry run
+    python main_demo.py --web                                     # demo page on port 8001 (starts STOPPED, DRY RUN)
+Without --threaded / --web / --source everything below runs exactly as before.
+
 Keys (in the terminal, or in the window with --show):
     q        quit (motors stop)
     space/e  E-STOP (latched)
@@ -54,6 +60,18 @@ def parse_args(argv=None):
                    help=f"lane backend (default config.LANE_BACKEND = {config.LANE_BACKEND!r})")
     p.add_argument("--ufld-model", choices=sorted(config.UFLD_MODELS), default=None,
                    help=f"UFLD model (default config.UFLD_MODEL = {config.UFLD_MODEL!r})")
+    t = p.add_argument_group("threaded runtime")
+    t.add_argument("--threaded", action="store_true", help="camera/lane/detection threads + fixed-rate loop")
+    t.add_argument("--web", action="store_true", help="demo page on port 8001 (implies --threaded)")
+    t.add_argument("--port", type=int, default=8001)
+    t.add_argument("--source", metavar="SRC", help="replay a folder of images or a video (implies --threaded, dry run)")
+    t.add_argument("--replay-fps", type=float, default=None, help="replay frame rate (default config.REPLAY_FPS)")
+    t.add_argument("--hz", type=float, default=None, help="control loop rate (default config.CONTROL_HZ)")
+    t.add_argument("--ufld-threads", type=int, default=None)
+    t.add_argument("--yolo-threads", type=int, default=None)
+    t.add_argument("--yolo-every", type=int, default=None)
+    t.add_argument("--phase", default=None, help="P1..P7 (default P7 = all rules)")
+    t.add_argument("--duration", type=float, default=0.0, help="stop after N seconds (0 = forever)")
     return p.parse_args(argv)
 
 
@@ -201,6 +219,9 @@ def control_loop(cam, lane, detector, sensors, motors, log, *, keys=None, writer
 
 def main(argv=None):
     args = parse_args(argv)
+    if args.threaded or args.web or args.source:
+        import run_threaded
+        return run_threaded.main(args)
     if args.video:
         args.dry_run = True
     draw = bool(args.save_video or args.show)

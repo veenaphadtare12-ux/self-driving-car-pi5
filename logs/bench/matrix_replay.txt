@@ -1,0 +1,32 @@
+[fans] using gpiochip0
+[fans] ON
+[sensors] VL53L5CX init (firmware upload takes ~10 s)...
+[sensors] VL53L5CX ranging at 15 Hz
+[sensors] VL53L5CX OK
+[ultrasonic] using gpiochip0
+mode replay | 60 s per setting | sensors on | control 20 Hz | SoC 47.4 C throttled 0x0
+ufld ncnn  N spin |  lane   det  ctrl  p.max ovr | l.age l.max d.age d.max | busy  temp  thr | fails
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+   2    1  1    0 |  2.30 15.97 20.00   58.3   0 | 0.676 1.233 0.111 0.203 | 2.00  65.0  0x0 | lane_fps,lane_age
+   2    1  2    0 |  2.38 14.70 20.00   58.0   0 | 0.650 1.097 0.108 0.213 | 1.95  66.1  0x0 | lane_fps,lane_age
+   2    1  3    0 |  2.62 10.00 20.00   55.6   0 | 0.594 0.882 0.108 0.168 | 1.64  65.5  0x0 | lane_fps,lane_age
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+   2    2  1    0 |  1.93 20.03 20.00   57.5   0 | 0.802 1.199 0.091 0.164 | 2.00  67.8  0x0 | lane_fps,lane_age
+   2    2  2    0 |  2.18 14.97 20.00   57.7   0 | 0.706 1.004 0.083 0.171 | 1.74  66.7  0x0 | lane_fps,lane_age
+   2    2  3    0 |  2.55 10.00 20.00   54.3   0 | 0.609 0.900 0.093 0.219 | 1.53  65.5  0x0 | lane_fps,lane_age
+   3    1  1    0 |  2.55 14.45 20.00   55.6   0 | 0.605 0.869 0.120 0.185 | 2.00  67.8  0x0 | lane_fps,lane_age
+   3    1  2    0 |  2.55 14.37 20.00   55.3   0 | 0.604 0.865 0.118 0.197 | 2.00  67.8  0x0 | lane_fps,lane_age
+   3    1  3    0 |  2.88 10.00 20.00   57.7   0 | 0.536 0.728 0.137 0.172 | 1.73  67.8  0x0 | lane_fps,lane_age
+   3    2  1    0 |  2.87  8.72 20.00   60.0   0 | 0.540 0.815 0.200 0.514 | 2.00  68.8  0x0 | lane_fps,lane_age,det_age
+   3    2  2    0 |  2.90  8.50 20.00   55.9   0 | 0.531 0.810 0.201 0.447 | 1.99  68.3  0x0 | lane_fps,lane_age,det_age
+   3    2  3    0 |  2.97  7.72 20.00   58.0   0 | 0.521 0.798 0.205 0.446 | 1.95  65.5  0x0 | lane_fps,lane_age,det_age
+   4    1  1    0 |  2.38 14.35 20.00   61.0   0 | 0.643 1.127 0.120 0.202 | 2.00  67.2  0x0 | lane_fps,lane_age
+   4    1  2    0 |  2.42 14.07 20.00   59.3   0 | 0.635 0.914 0.121 0.198 | 1.99  67.8  0x0 | lane_fps,lane_age
+   4    1  3    0 |  2.90 10.00 20.00   59.4   0 | 0.534 0.748 0.135 0.174 | 1.75  67.2  0x0 | lane_fps,lane_age
+   4    2  1    0 |  2.65  8.93 20.00   59.3   0 | 0.584 0.882 0.193 0.583 | 2.00  66.7  0x0 | lane_fps,lane_age,det_age
+   4    2  2    0 |  2.65  8.97 20.00   62.1   0 | 0.584 0.846 0.192 0.451 | 2.00  68.3  0x0 | lane_fps,lane_age,det_age
+   4    2  3    0 |  2.72  8.00 20.00   59.0   0 | 0.566 0.785 0.196 0.481 | 1.94  67.8  0x0 | lane_fps,lane_age,det_age
+[fans] OFF
+0/18 settings meet every target

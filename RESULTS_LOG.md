@@ -193,3 +193,64 @@ Detection rate < 100 % includes frames where the light is far / out of view (not
 1-class "Flame" model). Ready to run: `python test_parity_yolo.py --ref path/to/best.pt` (box match IoU ≥ 0.5,
 FAIL on any red↔green change or < 95 % of reference boxes matched).
 Regression: test_decision 59 OK, test_control 16 OK, test_lanes 22 OK.
+
+## UFLD integration — Part 3: threads + fixed-rate loop + benchmark (2026-11-16) — targets NOT met
+**Code.** `runtime.py`: camera thread (newest frame + capture time), lane thread, detection thread (NCNN on every
+Nth camera frame), fixed-rate control loop (CONTROL_HZ 20) in the main thread; `run_threaded.py`
+(`main_demo.py --threaded / --source / --web`; without these flags main_demo runs exactly as before);
+`camera.ReplayCamera` (folder/video at REPLAY_FPS, loops); `ObstacleDetector(threads=)` (NCNN threads must be set
+before the model loads; also sets torch threads); `UFLD_ALLOW_SPINNING` (onnxruntime busy-wait off: speed only).
+decide() unchanged. `LaneFeed` keeps decide()'s per-frame behaviour per LANE RESULT: new result → offset with
+dt = capture interval; between results → "hold" (lane counter + derivative memory unchanged, last steering);
+lane older than LANE_MAX_AGE_S 0.5 → counted lost every tick. A crashed thread stops the car.
+Phases P1–P7 filter detections before decide() ("ignored by phase" in the CSV); safety net/lane-lost/E-STOP always on.
+CSV = old 17 columns + lane_source, lane_fps, det_fps, lane_age, det_age_lat, cpu_temp, throttled, phase, running,
+dry_run, decision, ignored, failsafe, tick_ms, lane_seq.
+**Tests:** test_runtime.py 14/14 (incl. fixed-rate steering == old per-frame steering to 1e-9 on 60 irregular lane
+frames, lane-lost at the same lane frame, stale lane → STOP_LANE_LOST ≤ 1.0 s); decision 59, control 16, lanes 22 OK.
+
+**Benchmark matrix** (`bench_runtime.py`, 60 s each after 6 s warm-up, DRY RUN, sensors on, UFLD v2_same, spinning off).
+Replay = replay/s04_640x480.avi at 30 fps; live = camera (30 fps). lane/det = results per second; ages = at the control
+tick (what decide() sees). Control loop 20.00 Hz in all 36 runs; overruns 0 except one live run (1 overrun, 221 ms).
+| UFLD thr | NCNN thr | N | replay lane | det | lane age mean/max | live lane | det | lane age mean/max | det age max (live) |
+|---|---|---|---|---|---|---|---|---|---|
+| 2 | 1 | 1/2/3 | 2.30/2.38/2.62 | 16.0/14.7/10.0 | 0.59–0.68 / 0.88–1.23 | 2.35/2.50/2.55 | 15.6/14.8/10.0 | 0.61–0.66 / 0.88–1.01 | 0.19–0.37 |
+| 2 | 2 | 1/2/3 | 1.93/2.18/2.55 | 20.0/15.0/10.0 | 0.61–0.80 / 0.90–1.20 | 1.93/2.13/2.32 | 18.8/15.0/9.4 | 0.68–0.80 / 1.02–1.72 | 0.18–0.82 |
+| 3 | 1 | 1/2/3 | 2.55/2.55/2.88 | 14.5/14.4/10.0 | 0.54–0.61 / 0.73–0.87 | 2.27/2.25/2.77 | 13.6/13.9/10.0 | 0.56–0.70 / 0.88–1.72 | 0.21–0.27 |
+| 3 | 2 | 1/2/3 | 2.87/2.90/2.97 | 8.7/8.5/7.7 | 0.52–0.54 / 0.80–0.82 | 2.82/2.80/2.87 | 8.1/7.9/7.4 | 0.55–0.56 / 0.84–0.92 | 0.44–0.53 |
+| 4 | 1 | 1/2/3 | 2.38/2.42/2.90 | 14.4/14.1/10.0 | 0.53–0.64 / 0.75–1.13 | 2.35/2.35/2.55 | 13.8/14.0/9.9 | 0.62–0.66 / 0.94–1.42 | 0.22–0.31 |
+| 4 | 2 | 1/2/3 | 2.65/2.65/2.72 | 8.9/9.0/8.0 | 0.57–0.58 / 0.79–0.88 | 2.57/2.60/2.68 | 8.1/8.5/7.4 | 0.58–0.60 / 0.90–0.97 | 0.54–0.71 |
+Max temperature 68.8 °C, throttled 0x0 throughout. **0/36 meet all targets** (lane ≥ 4 fps, det ≥ 5 fps, ages < 0.4 s).
+Extra (YOLO every 6th frame = 5 fps): replay UFLD3/NCNN1 lane 3.67 det 5.00; **live UFLD4/NCNN1 lane 3.28, det 5.02,
+lane age 0.48/0.70, det age 0.18/0.32, 20.00 Hz, 0 overruns, 67.8 °C**; live UFLD3/NCNN1 lane 3.20, det 5.02, lane age max 0.90.
+Reference: UFLD alone in the runtime 4.20 (3 thr) / 4.53 (4 thr) fps; YOLO alone 47 ms (1 thr) / 31 ms (2) / 27 ms (4).
+Spinning on vs off (replay, 20 s, N=3): UFLD3 2.90 vs 2.90, UFLD4 2.40 vs 2.80 → off.
+Sensors on vs off (replay UFLD3/NCNN1/N3): lane 2.88 vs 3.07.
+**Parallelism (GIL):** real. UFLD3+NCNN1 N=1 live: lane 2.27/4.20 + det 13.6/21.3 = 1.18 "alone-equivalents" per
+second (> 1 means both models computed at the same time); onnxruntime and NCNN release the GIL. The limit is CPU:
+UFLD wants ~3.6 core-seconds per lane frame at 4 fps on a 4-core Pi.
+**Why the targets can't be met with this model:** UFLD alone = 4.5 fps → a result is ~0.22 s old on arrival and is used
+until the next one, so the age at the control tick is ~0.22–0.45 s even with nothing else running; with YOLO ≥ 5 fps
+the lane drops to ~3.3 fps (live) → max age ~0.7 s.
+**Saved (best available, not meeting lane fps / lane age):** UFLD_THREADS 4, YOLO_THREADS 1, RT_YOLO_EVERY_N 6
+(threaded runtime only; YOLO_EVERY_N 3 kept for the old frame loop), UFLD_ALLOW_SPINNING False.
+Notes for decision: (1) at 3.3 lane fps LANE_LOST_FRAMES 10 = ~3 s of lost lane before STOP_LANE_LOST (Hough at
+30 fps: 0.33 s) — not changed (calibrated threshold); (2) LANE_MAX_AGE_S 0.5 is below the 0.7 s max age → short
+"stale" stretches count as lost frames; (3) INT8 UFLD measured below as the plan's fallback (proposal only).
+
+### Extra check: red / green detection by box size (`test_red_light_sizes.py`)
+obstacles_v1 photos, NCNN, sizes from the box (or ±5 neighbouring photos when missed). Buckets: small < 0.10,
+medium 0.10–0.15, large ≥ 0.15 (= RED_LIGHT_HEIGHT_RATIO, the stopping size).
+| scene | small found@0.4 | medium | large | size unknown |
+|---|---|---|---|---|
+| red (292) | 26/27 (96 %) | 152/189 (80 %) | **9/38 (24 %)** | 38 (no box, no neighbour) |
+| green (276) | 30/30 (100 %) | 144/150 (96 %) | 34/67 (51 %) | 29 |
+**The misses are the CLOSE lights, not far ones**: in every photo the light is on the LEFT of the frame (box centre
+x 0.01–0.33); large lights sit at x 0.00–0.03, cut off by the frame edge. Confidence when found: median 0.8.
+**3 consecutive checks (SIGNAL_CONFIRM_CHECKS):**
+- with the current SIGNAL_REGION_X (0.4–1.0, right side): **0 % of frames pass → STOP_RED would never fire in this layout.**
+- region ignored (light side assumed correct), at stopping size: per-check pass 0.24 → 3-in-a-row fails 92 % of
+  3-photo windows (24/26; 99 % if independent). At medium size: per-check 0.80 → 26 % of windows fail (48 % iid).
+Decision needed at Part 8.3 (not changed): put the light where it stands on the demo track, set SIGNAL_REGION_X to
+that side, and pick RED_LIGHT_HEIGHT_RATIO at a size where the light is still fully in view (~0.12 here).
+**YOLO NCNN vs best.pt:** still not run — ~/best.pt not present (checked 03:30).

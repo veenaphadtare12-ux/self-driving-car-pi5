@@ -5,3 +5,4 @@ __pycache__/
 lane_frames/
 yolo_frames/
 models/ufld/*.onnx
+replay/

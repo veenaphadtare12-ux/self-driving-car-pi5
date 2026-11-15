@@ -138,6 +138,8 @@ UFLD_ROW_ANCHORS = os.path.join(_HERE, "models", "ufld", "row_anchors.txt")   # 
 UFLD_SHA256 = os.path.join(_HERE, "models", "ufld", "SHA256SUMS")
 UFLD_THREADS = 4              # onnxruntime intra-op threads (Part 3 benchmark decides the final value)
 UFLD_RESIZE = "pil"           # exactly like training; do not change
+UFLD_ALLOW_SPINNING = False   # onnxruntime idle threads busy-wait if True (its default); False frees CPU for YOLO
+                              # (Part 3: speed only, outputs identical; slightly better with YOLO running)
 # Estimator, in REFERENCE coordinates 1280x720 (the training frames); from car_project lane_follow.yaml
 UFLD_IMAGE_CENTER_X = 640
 UFLD_LOOKAHEAD_ROWS = (320, 420)   # offset band, ~42-51 cm ahead of the camera
@@ -226,6 +228,30 @@ STOP_SIGN_HEIGHT_RATIO = 0.10 # measured 0.106 at the stop line 2026-11-16; sign
 STOP_SIGN_CONFIRM_CHECKS = 3
 STOP_SIGN_WAIT_S = 3.0
 STOP_SIGN_IGNORE_S = 5.0
+
+# ---------------------------------------------------------------------------
+# Threaded runtime (runtime.py; main_demo.py --threaded / --web). Part 3 benchmark picks the values.
+# ---------------------------------------------------------------------------
+CONTROL_HZ = 20               # fixed-rate control loop
+LANE_MAX_AGE_S = 0.5          # lane result older than this = no lane
+# Part 3 benchmark (live, 60 s): best available = UFLD 4 threads + NCNN 1 thread + YOLO every 6th frame:
+# lane 3.28 fps, detection 5.02 fps, 20.00 Hz, lane age max 0.70 s, det age max 0.32 s, 67.8 C.
+# No setting reaches lane >= 4 fps / lane age < 0.4 s with the FP32 UFLD (see RESULTS_LOG Part 3).
+YOLO_THREADS = 1              # NCNN CPU threads in the threaded runtime (None = all cores)
+RT_YOLO_EVERY_N = 6           # threaded runtime: YOLO on every Nth camera frame (30 fps camera -> 5 fps)
+                              # (YOLO_EVERY_N above stays the frame-loop value for the old main_demo)
+REPLAY_FPS = 30               # --source: frames per second delivered like a camera
+# Fail-safes (failsafe.py, Part 4). They only stop or slow the car; a stop latches until START.
+FAILSAFE_STALE_S = 1.0        # lane / detection / camera thread published nothing for this long -> STOP
+FAILSAFE_UFLD_MIN_FPS = 2.5   # UFLD lane FPS below this ...
+FAILSAFE_UFLD_WINDOW_S = 3.0  # ... averaged over this window, while driving -> STOP (+ offer Hough)
+FAILSAFE_TEMP_SLOW_C = 80.0   # CPU at/above -> half speed
+FAILSAFE_TEMP_STOP_C = 85.0   # CPU at/above -> STOP
+FAILSAFE_HOT_FACTOR = 0.5     # CPU above FAILSAFE_TEMP_SLOW_C -> both wheel speeds x this
+FAILSAFE_HEARTBEAT_S = 1.5    # demo page heartbeat missing this long while driving -> STOP
+WEB_BASE_SPEED_MAX = 35       # demo page base-speed slider cap (%)
+PREFLIGHT_LANE_MARGIN_FPS = 0.3   # preflight FPS test: lane >= FAILSAFE_UFLD_MIN_FPS + this
+PREFLIGHT_MIN_DET_FPS = 4.5       # preflight FPS test: detection >= this
 
 # ---------------------------------------------------------------------------
 # Logging / video

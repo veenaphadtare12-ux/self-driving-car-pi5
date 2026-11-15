@@ -20,16 +20,38 @@ _COLORS = {
 
 
 class ObstacleDetector:
-    def __init__(self, model_path=config.YOLO_MODEL_PATH, imgsz=config.YOLO_IMGSZ, conf=config.YOLO_CONF):
+    def __init__(self, model_path=config.YOLO_MODEL_PATH, imgsz=config.YOLO_IMGSZ, conf=config.YOLO_CONF,
+                 threads=None):
+        """threads: NCNN CPU threads (None = NCNN default, all cores). NCNN reads it when the model is
+        loaded (on the warm-up predict below), so it is set on the Net object ultralytics creates."""
         from ultralytics import YOLO
         self.model = YOLO(model_path, task="detect")
         self.imgsz = imgsz
         self.conf = conf
         self.names = self.model.names
+        self.threads = threads
         # Warm-up: the first NCNN inference is slow because it loads the model
         import numpy as np
-        self.model.predict(np.zeros((config.CAM_HEIGHT, config.CAM_WIDTH, 3), np.uint8),
-                           imgsz=self.imgsz, conf=self.conf, verbose=False)
+        restore = None
+        if threads:
+            import ncnn
+            import torch
+            torch.set_num_threads(int(threads))   # ultralytics pre/post-processing (process-wide)
+            restore = ncnn.Net
+            n = int(threads)
+
+            class _Net(restore):
+                def __init__(self):
+                    super().__init__()
+                    self.opt.num_threads = n
+            ncnn.Net = _Net
+        try:
+            self.model.predict(np.zeros((config.CAM_HEIGHT, config.CAM_WIDTH, 3), np.uint8),
+                               imgsz=self.imgsz, conf=self.conf, verbose=False)
+        finally:
+            if restore is not None:
+                import ncnn
+                ncnn.Net = restore
 
     def detect(self, frame_bgr):
         h, w = frame_bgr.shape[:2]

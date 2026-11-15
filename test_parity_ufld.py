@@ -91,10 +91,12 @@ def main():
     ap.add_argument("--model", default=config.UFLD_MODEL, choices=sorted(config.UFLD_MODELS))
     ap.add_argument("--threads", type=int, default=config.UFLD_THREADS)
     ap.add_argument("--no-ref", action="store_true", help="skip car_project LaneDetector comparison")
+    ap.add_argument("--path", default=None, help="evaluate this ONNX file instead (e.g. an INT8 candidate)")
+    ap.add_argument("--threshold", type=float, default=THRESHOLD)
     ap.add_argument("--json", default=None)
     a = ap.parse_args()
 
-    path = config.UFLD_MODELS[a.model]
+    path = a.path or config.UFLD_MODELS[a.model]
     det = UfldModel(path, threads=a.threads, resize=config.UFLD_RESIZE)
     ref = None
     if not a.no_ref:
@@ -134,13 +136,13 @@ def main():
     print("ALL   :", fmt(r_all))
     print("SUB150:", fmt(r_sub))
     print(f"detect median {np.median(t_det) * 1000:.0f} ms ({1 / np.median(t_det):.1f} fps, pipeline only)")
-    ok = r_all["point_accuracy"] >= THRESHOLD and r_sub["point_accuracy"] >= THRESHOLD
+    ok = r_all["point_accuracy"] >= a.threshold and r_sub["point_accuracy"] >= a.threshold
     if ref is not None:
         print(f"vs car_project LaneDetector: lane row-set mismatches {row_mismatch}, max |dx| {max_dx:.6f} px")
         ok = ok and row_mismatch == 0 and max_dx < 0.01
-    print(f"reference {REFERENCE} (car_project, all 578) | threshold {THRESHOLD} -> {'PASS' if ok else 'FAIL'}")
+    print(f"reference {REFERENCE} (car_project, all 578) | threshold {a.threshold} -> {'PASS' if ok else 'FAIL'}")
     if a.json:
-        json.dump({"model": a.model, "all": r_all, "subset150": r_sub, "ref_row_mismatch": row_mismatch,
+        json.dump({"model": a.path or a.model, "all": r_all, "subset150": r_sub, "ref_row_mismatch": row_mismatch,
                    "ref_max_dx": max_dx, "pass": ok}, open(a.json, "w"), indent=1)
     sys.exit(0 if ok else 1)
 

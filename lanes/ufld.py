@@ -47,11 +47,14 @@ class UfldModel:
     """Model + exact pre/post-processing. detect() returns ([left, right] {y: x}, [conf_l, conf_r])."""
 
     def __init__(self, model_path, threads=None, row_anchors=None, resize="pil", invert=True,
-                 conf_rows=None):
+                 conf_rows=None, allow_spinning=None):
         import onnxruntime as ort
         so = ort.SessionOptions()
         if threads:
             so.intra_op_num_threads = int(threads)
+        spin = config.UFLD_ALLOW_SPINNING if allow_spinning is None else allow_spinning
+        if not spin:   # idle worker threads sleep instead of busy-waiting (speed only; same outputs)
+            so.add_session_config_entry("session.intra_op.allow_spinning", "0")
         so.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
         self.sess = ort.InferenceSession(model_path, so, providers=["CPUExecutionProvider"])
         self.input = self.sess.get_inputs()[0].name

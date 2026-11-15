@@ -67,5 +67,71 @@ class FileCamera:
             self.cap.release()
 
 
+class ReplayCamera:
+    """Replay for the threaded runtime / web page (--source): a folder of images (sorted) or a video file,
+    delivered at `fps` like a camera (read() blocks until the next frame time), resized to CAM_WIDTH x
+    CAM_HEIGHT, looping at the end when loop=True (else read() returns None at the end)."""
+
+    IMG_EXT = (".jpg", ".jpeg", ".png", ".bmp")
+
+    def __init__(self, source, fps=30.0, loop=True, clock=None):
+        import time
+        self._time = time
+        self.clock = clock or time.monotonic
+        self.source, self.fps, self.loop = source, float(fps), loop
+        self.files, self.cap = None, None
+        if os.path.isdir(source):
+            self.files = sorted(os.path.join(source, f) for f in os.listdir(source)
+                                if os.path.splitext(f)[1].lower() in self.IMG_EXT)
+            if not self.files:
+                raise RuntimeError(f"no images in {source}")
+        else:
+            self.cap = cv2.VideoCapture(source)
+            if not self.cap.isOpened():
+                raise RuntimeError(f"cannot open video source {source}")
+        self.i = 0
+        self.loops = 0
+        self._next = None
+
+    def _raw(self):
+        if self.files is not None:
+            if self.i >= len(self.files):
+                if not self.loop:
+                    return None
+                self.i, self.loops = 0, self.loops + 1
+            img = cv2.imread(self.files[self.i])
+            self.i += 1
+            return img
+        ok, frame = self.cap.read()
+        if not ok:
+            if not self.loop:
+                return None
+            self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            self.loops += 1
+            ok, frame = self.cap.read()
+            if not ok:
+                return None
+        self.i += 1
+        return frame
+
+    def read(self):
+        now = self.clock()
+        if self._next is None:
+            self._next = now
+        elif self._next > now:
+            self._time.sleep(self._next - now)
+        else:
+            self._next = max(self._next, now - 1.0 / self.fps)   # don't burst after a stall
+        self._next += 1.0 / self.fps
+        frame = self._raw()
+        if frame is not None and (frame.shape[1] != config.CAM_WIDTH or frame.shape[0] != config.CAM_HEIGHT):
+            frame = cv2.resize(frame, (config.CAM_WIDTH, config.CAM_HEIGHT))
+        return frame
+
+    def close(self):
+        if self.cap is not None:
+            self.cap.release()
+
+
 def open_camera(source=None):
     return PiCamera() if source is None else FileCamera(source)
