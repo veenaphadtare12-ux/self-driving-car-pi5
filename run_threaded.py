@@ -103,7 +103,22 @@ def build(args, running, log=True):
     return rt, [lambda: cam.close(), lambda: sensors and sensors.close()]
 
 
+def _install_signal_handlers():
+    """SIGTERM (kill, systemd) and SIGINT (even when inherited as ignored by a background start) ->
+    KeyboardInterrupt in the main thread -> the normal clean exit (motors stopped, fans off)."""
+    import signal
+
+    def handler(signum, frame):
+        raise KeyboardInterrupt
+    for sig in (signal.SIGTERM, signal.SIGINT):
+        try:
+            signal.signal(sig, handler)
+        except (ValueError, OSError):
+            pass
+
+
 def main(args):
+    _install_signal_handlers()
     if args.source:
         args.dry_run = True
     from fans import Fans

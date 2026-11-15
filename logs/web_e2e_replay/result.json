@@ -1,0 +1,84 @@
+{
+ "page_load_s": 0.026,
+ "initial": {
+  "state": "STOPPED",
+  "dry_run": true,
+  "dry_locked": true,
+  "lane": "ufld:v2_same"
+ },
+ "rates_page_closed": {
+  "ctrl_hz": 20.19,
+  "ctrl_hz_min": 20.0,
+  "lane_fps": 3.35,
+  "det_fps": 5.04,
+  "view_fps": 0
+ },
+ "rates_stream_open": {
+  "ctrl_hz": 20.13,
+  "ctrl_hz_min": 20.0,
+  "lane_fps": 3.19,
+  "det_fps": 5.0,
+  "view_fps": 9.91
+ },
+ "rates_stream_record": {
+  "ctrl_hz": 20.11,
+  "ctrl_hz_min": 20.0,
+  "lane_fps": 3.17,
+  "det_fps": 4.98,
+  "view_fps": 9.76
+ },
+ "recording": {
+  "video": "P7_20261116_034729.mp4",
+  "csv": "P7_20261116_034729.csv"
+ },
+ "phases": {
+  "P1": {
+   "states_seen": {
+    "STOPPED": 1,
+    "DRIVE": 31
+   },
+   "last_state": "DRIVE",
+   "last_reason": "dropout 1",
+   "ignored": [
+    "animal"
+   ]
+  },
+  "P2": {
+   "states_seen": {
+    "DRIVE": 1,
+    "STOP_OBSTACLE": 31
+   },
+   "last_state": "STOP_OBSTACLE",
+   "last_reason": "animal h=0.68 (no tof)",
+   "ignored": []
+  },
+  "P7": {
+   "states_seen": {
+    "STOPPED": 1,
+    "STOP_OBSTACLE": 31
+   },
+   "last_state": "STOP_OBSTACLE",
+   "last_reason": "clearing 0.30s",
+   "ignored": []
+  }
+ },
+ "second_browser": {
+  "claim": 409,
+  "stop_from_viewer": 403,
+  "running_after_viewer_stop": true,
+  "estop_from_viewer": 200,
+  "state_after": "ESTOP",
+  "dry_run_after": true
+ },
+ "heartbeat": {
+  "stop_after_s": 1.14,
+  "message": "FAIL-SAFE: page heartbeat lost 1.6s"
+ },
+ "command_ms": {
+  "estop": 4.5,
+  "start": 2.2,
+  "stop": 2.7,
+  "phase": 5.2
+ },
+ "command_max_s": 0.005
+}

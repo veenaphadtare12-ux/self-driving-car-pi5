@@ -211,7 +211,7 @@ class TestRuntime(unittest.TestCase):
         self.assertLessEqual(r.t_frame, r.t_done)
 
     def test_fixed_rate_and_dry(self):
-        rt, m = make_rt(running=True, hz=20)
+        rt, m = make_rt(running=True, hz=20, yolo_every_n=3)
         rt.start_threads()
         try:
             res = rt.run(duration=2.0)
@@ -308,6 +308,22 @@ class TestRuntime(unittest.TestCase):
         rt.set_phase("P3")
         self.assertFalse(rt.running)
         self.assertEqual(rt.phase, "P3")
+        rt.close()
+
+    def test_phase_change_clears_latches(self):
+        car = {"cls": "car", "conf": 0.9, "box": (200, 200, 440, 470), "box_height_ratio": 0.56,
+               "cx_ratio": 0.5, "bottom_ratio": 0.98}
+        rt, m = make_rt(det=FakeDet([car]), sensors=FakeSensors(tof=300.0), running=True, phase="P7")
+        rt.start_threads()
+        th = threading.Thread(target=rt.run, kwargs={"duration": 2.0}, daemon=True)
+        th.start()
+        time.sleep(0.6)
+        self.assertEqual(rt.last["state"], "STOP_OBSTACLE")
+        rt.set_phase("P1")
+        rt.cmd_start()
+        time.sleep(0.15)                       # well inside OBSTACLE_CLEAR_S
+        self.assertEqual(rt.last["state"], "DRIVE")
+        th.join()
         rt.close()
 
     def test_csv_header(self):

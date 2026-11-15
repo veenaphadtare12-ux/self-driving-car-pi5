@@ -294,3 +294,45 @@ reason shown on the page and in the CSV `failsafe` column). Values in config (FA
 | STOP latch | stays stopped after recovery | stays STOPPED until START | PASS |
 Note: with the FP32 setting (lane ~3.3 fps live) the UFLD-unhealthy margin is 0.8 fps; checked in the Part 6 soak.
 Regression: decision 59, control 16, lanes 22, runtime 14 OK.
+
+## UFLD integration — Part 5: demo page on port 8001 (2026-11-16) — PASS
+`web.py` (stdlib http.server, daemon threads; design from car_project/car/web.py), `python main_demo.py --web
+[--dry-run] [--source ...] [--lane ufld]`; prints the URL with the Pi's IP. Starts STOPPED + DRY RUN.
+- Always-visible top bar: EMERGENCY STOP (works from ANY browser; turns DRY RUN on), START, STOP. DRY RUN switch
+  (locked on with --source / --dry-run; real Motors are only created when switched off, stopped, after a confirm).
+- One controlling browser (token + 0.5 s heartbeat); others view-only; takeover only while stopped or after 5 s
+  without heartbeat. Heartbeat lost 1.5 s while driving → STOP (failsafe.py). Space/e E-STOP over SSH kept.
+- Phases P1–P7 (highlighted; change stops the car and starts with fresh decision state, so no latch carries over);
+  "ignored by phase: …" in the view + CSV. Lane selector Hough / UFLD v2_same / v2_plus (only stopped; loads in the
+  background); "Switch to Hough" button when the UFLD fail-safe fires.
+- Live view MJPEG 480x360 ~10 fps, drawn in its own thread only while watched/recording: lane points/lines + centre,
+  YOLO boxes, corridor + signal region, state + reason, L/R, ToF/US, lane/det fps, control Hz, CPU temp, DRY RUN, REC;
+  "CAMERA NOT CONNECTED" when there is no camera (car can't drive: camera fail-safe).
+- RECORD: videos/<phase>_<time>.mp4 (stream rate) + logs/<phase>_<time>.csv. Status grid (lane/det fps, ages, CPU,
+  throttled/UNDER-VOLTAGE), last 10 state changes, indicators camera/ToF/US L/US R/IMU.
+- Part B: sliders base speed (cap WEB_BASE_SPEED_MAX 35) / Kp / Kd (of the active backend) / trims, applied live,
+  Save → web_settings.json (only loaded by --web; config.py untouched); rehearsal tracker → rehearsal_log.csv
+  (pass/fail/in-a-row, goal 5).
+- SIGTERM/SIGINT now stop the threaded runtime cleanly even when started in the background (run_threaded.py).
+- Fix found by the end-to-end check: after P7 saw an obstacle, switching to P1 kept STOP_OBSTACLE for ~1 s
+  (decide()'s obstacle latch, OBSTACLE_CLEAR_S) → phase change now resets the decision state (car is stopped anyway).
+
+**Tests.** test_web.py 10/10 (HTTP server + runtime with fakes): page loads, initial STOPPED/DRY RUN, buttons < 0.5 s
+and effective, second browser view-only but E-STOP works, heartbeat loss → STOP ≤ 1.5 s, phase stop + ignored,
+lane switch only stopped, RECORD mp4 + phase CSV, MJPEG frames, DRY RUN lock, settings cap/save, rehearsal streak,
+no camera → banner + can't drive. test_runtime 15/15 (+ phase latch test).
+**End-to-end** (`check_web_e2e.py` against `main_demo.py --web --source obstacles/s3 --lane ufld --no-sensors`,
+real UFLD FP32 + YOLO, chosen setting):
+| check | result |
+|---|---|
+| page load | 10.4 kB in 0.026 s |
+| command response (phase/start/stop/estop) | max 5.7 ms (< 0.5 s) |
+| control Hz / lane fps / det fps — page closed | 20.12 (min 20.0) / 3.22 / 5.01 |
+| — stream open (view 9.8 fps) | 20.17 (min 20.0) / 3.17 / 5.02 |
+| — stream + RECORD (view 9.9 fps) | 20.14 (min 20.0) / 3.08 / 4.98 → control rate unchanged (0 %), lane −4 % |
+| P1 (camel in lane) | DRIVE all the time, "ignored by phase: animal" (after the fix) |
+| P2 | STOP_OBSTACLE "animal h=0.68 (no tof)" / "clearing" hysteresis |
+| P7 | STOP_OBSTACLE |
+| second browser | claim 409, STOP 403, car keeps running; E-STOP 200 → ESTOP + DRY RUN |
+| heartbeat (controller stops sending while driving) | STOP, "page heartbeat lost 1.6s" (1.5 s + tick after the last heartbeat) |
+Frames: logs/web_e2e_replay/P1.jpg, P2.jpg, P7.jpg (overlays checked by eye: lane dots, boxes, regions, HUD).

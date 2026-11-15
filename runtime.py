@@ -507,6 +507,10 @@ class CarRuntime:
         with self.lock:
             self.cmd_stop(f"phase -> {phase}")
             self.phase = phase
+            # fresh decision state per phase (the car is stopped): no latch from the previous phase's rules,
+            # e.g. an obstacle stop seen in P7 must not hold the car for OBSTACLE_CLEAR_S after switching to P1
+            self.st = DecisionState()
+            self.feed.reset()
 
     def set_lane(self, backend, model=None):
         """Switch lane backend (only while stopped). Blocks while the new model loads."""
