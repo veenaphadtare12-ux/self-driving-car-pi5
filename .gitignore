@@ -4,3 +4,4 @@ __pycache__/
 *.mp4
 lane_frames/
 yolo_frames/
+models/ufld/*.onnx

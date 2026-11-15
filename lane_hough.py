@@ -19,6 +19,7 @@ class LaneDetector:
         self.cfg = cfg
         self.last_center = None   # used to split left/right lines on curves
         self.last_method = "none"
+        self.last_fits = (None, None)
         k = cfg.MORPH_KERNEL
         self._kernel = np.ones((k, k), np.uint8)
 
@@ -60,6 +61,7 @@ class LaneDetector:
             self.last_method = "none"
 
         self.last_center = center  # None resets the divider to the image center next frame
+        self.last_fits = (left_fit, right_fit)   # read by lanes/hough.py for LaneResult
         offset = None if center is None else float(center - img_cx)
 
         overlay = None

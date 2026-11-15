@@ -6,6 +6,7 @@ Full control loop: camera -> lane (every frame) + YOLO (every N frames) + sensor
     python main_demo.py --save-video out.mp4          # overlay video
     python main_demo.py --no-yolo                     # lane + distance safety net only
     python main_demo.py --video clip.mp4              # laptop: run on a recorded clip (implies --dry-run)
+    python main_demo.py --lane ufld --dry-run         # lane backend: hough (default, config.LANE_BACKEND) or ufld
 
 Keys (in the terminal, or in the window with --show):
     q        quit (motors stop)
@@ -27,7 +28,7 @@ import config
 from camera import open_camera
 from decision import DecisionInputs, DecisionState, decide
 from keys import KeyReader
-from lane_hough import LaneDetector
+from lanes import BACKENDS, make_lane, steer_cfg as lane_steer_cfg
 from obstacle_yolo import draw_detections, draw_regions, format_detections
 
 STATE_COLORS = {"DRIVE": (0, 200, 0), "CAUTION": (0, 255, 255), "STOP_OBSTACLE": (0, 0, 255),
@@ -49,6 +50,10 @@ def parse_args(argv=None):
     p.add_argument("--video", metavar="SRC", help="file/image/webcam index instead of picamera2 (forces --dry-run)")
     p.add_argument("--max-frames", type=int, default=0, help="stop after N frames (0 = run forever)")
     p.add_argument("--quiet", action="store_true", help="don't print a line per frame")
+    p.add_argument("--lane", choices=BACKENDS, default=None,
+                   help=f"lane backend (default config.LANE_BACKEND = {config.LANE_BACKEND!r})")
+    p.add_argument("--ufld-model", choices=sorted(config.UFLD_MODELS), default=None,
+                   help=f"UFLD model (default config.UFLD_MODEL = {config.UFLD_MODEL!r})")
     return p.parse_args(argv)
 
 
@@ -60,11 +65,11 @@ def age(now, t):
     return None if t is None else now - t
 
 
-def draw_hud(img, out, offset, tof, us, fps, n_dets, yolo_on):
+def draw_hud(img, out, offset, tof, us, fps, n_dets, yolo_on, offset_spec="+.0f"):
     col = STATE_COLORS.get(out.state, (255, 255, 255))
     cv2.rectangle(img, (0, 0), (img.shape[1], 58), (0, 0, 0), -1)
     cv2.putText(img, f"{out.state}  {out.reason}", (8, 22), cv2.FONT_HERSHEY_SIMPLEX, 0.65, col, 2)
-    line2 = (f"L {out.left:+5.1f} R {out.right:+5.1f} | off {fmt(offset, '+.0f')} | "
+    line2 = (f"L {out.left:+5.1f} R {out.right:+5.1f} | off {fmt(offset, offset_spec)} | "
              f"ToF {fmt(tof)}mm | US {fmt(us[0])}/{fmt(us[1])} | "
              f"{fps:4.1f} FPS | yolo {'on' if yolo_on else 'off'} ({n_dets})")
     cv2.putText(img, line2, (8, 48), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255, 255, 255), 1)
@@ -77,8 +82,9 @@ class _NoKeys:
 
 
 def control_loop(cam, lane, detector, sensors, motors, log, *, keys=None, writer=None,
-                 show=False, draw=False, verbose=False, max_frames=0, clock=time.monotonic):
+                 show=False, draw=False, verbose=False, max_frames=0, clock=time.monotonic, steer_cfg=None):
     """Runs until q, end of source, max_frames, Ctrl+C, or an exception.
+    steer_cfg: None = decide() with the config module (Hough); else a config view with other steering gains.
     Returns 'quit', 'end', 'max_frames', 'interrupt' or 'exception'.
     The motors are stopped on every exit path."""
     keys = keys or _NoKeys()
@@ -91,9 +97,10 @@ def control_loop(cam, lane, detector, sensors, motors, log, *, keys=None, writer
     frame_i = 0
     warned_dead = False
     last_row = {}
+    off_csv, off_hud = (".1f", "+.0f") if steer_cfg is None else (".3f", "+.2f")   # px vs normalised
 
     def write_row(now, state, reason, left, right):
-        log.writerow([f"{now - t_start:.3f}", frame_i, fmt(last_row.get("offset"), ".1f"),
+        log.writerow([f"{now - t_start:.3f}", frame_i, fmt(last_row.get("offset"), off_csv),
                       format_detections(detections), fmt(age(now, det_t), ".3f"),
                       fmt(last_row.get("tof")), fmt(age(now, last_row.get("tof_t")), ".3f"),
                       fmt(last_row.get("fl")), fmt(age(now, last_row.get("fl_t")), ".3f"),
@@ -125,9 +132,10 @@ def control_loop(cam, lane, detector, sensors, motors, log, *, keys=None, writer
                 alive = "-"
             last_row = dict(offset=offset, tof=tof, tof_t=tof_t, fl=fl, fl_t=fl_t, fr=fr, fr_t=fr_t, alive=alive)
 
-            out, st = decide(DecisionInputs(t=now, offset_px=offset, detections=detections, det_t=det_t,
-                                            tof_mm=tof, tof_t=tof_t, us_fl_mm=fl, us_fl_t=fl_t,
-                                            us_fr_mm=fr, us_fr_t=fr_t, estop=estop), st)
+            inp = DecisionInputs(t=now, offset_px=offset, detections=detections, det_t=det_t,
+                                 tof_mm=tof, tof_t=tof_t, us_fl_mm=fl, us_fl_t=fl_t,
+                                 us_fr_mm=fr, us_fr_t=fr_t, estop=estop)
+            out, st = decide(inp, st) if steer_cfg is None else decide(inp, st, steer_cfg)
             motors.drive(out.left, out.right)     # (0, 0) = active brake, then coast
 
             if t_prev is not None and now > t_prev:
@@ -145,7 +153,7 @@ def control_loop(cam, lane, detector, sensors, motors, log, *, keys=None, writer
             if draw:
                 vis = draw_regions(draw_detections(overlay, detections))
                 us_now = (fl, fr)
-                draw_hud(vis, out, offset, tof, us_now, fps, len(detections), detector is not None)
+                draw_hud(vis, out, offset, tof, us_now, fps, len(detections), detector is not None, off_hud)
                 if writer is not None:
                     writer.write(vis)
                 if show:
@@ -213,7 +221,9 @@ def main(argv=None):
     result = "exception"
     try:
         cam = open_camera(args.video)
-        lane = LaneDetector()
+        backend = args.lane or config.LANE_BACKEND
+        lane = make_lane(backend, model=args.ufld_model)
+        print(f"Lane backend: {lane.source}")
 
         detector = None
         if not args.no_yolo:
@@ -240,7 +250,7 @@ def main(argv=None):
         with KeyReader() as keys:
             result = control_loop(cam, lane, detector, sensors, motors, log, keys=keys, writer=writer,
                                   show=args.show, draw=draw, verbose=args.dry_run and not args.quiet,
-                                  max_frames=args.max_frames)
+                                  max_frames=args.max_frames, steer_cfg=lane_steer_cfg(backend))
     except KeyboardInterrupt:
         print("\nCtrl+C: stopping.")
         result = "interrupt"

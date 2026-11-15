@@ -122,6 +122,41 @@ HOUGH_MAX_ABS_SLOPE = 3.0     # ignore near-vertical segments (sign poles, obsta
 MIN_MASK_PIXELS = 300         # less than this in the ROI = no lane
 
 # ---------------------------------------------------------------------------
+# Lane backend: "hough" (above, tape mask + Hough) or "ufld" (trained UFLD v2 model, lanes/ufld.py).
+# main_demo.py --lane overrides. Each backend has its own steering gains (offsets are in different units).
+# ---------------------------------------------------------------------------
+LANE_BACKEND = "hough"
+LANE_SMOOTH_FRAMES = 3        # UFLD: average offset/heading over the last N valid frames
+LANE_HEADING_BIAS = 0.0       # radians subtracted from the heading (camera/mount yaw; car straight + centred)
+
+UFLD_MODELS = {
+    "v2_same": os.path.join(_HERE, "models", "ufld", "ufld_v2_same_mytrack.onnx"),
+    "v2_plus": os.path.join(_HERE, "models", "ufld", "ufld_v2_plus_mytrack.onnx"),
+}
+UFLD_MODEL = "v2_same"
+UFLD_ROW_ANCHORS = os.path.join(_HERE, "models", "ufld", "row_anchors.txt")   # 56 anchors, data-v2 package
+UFLD_SHA256 = os.path.join(_HERE, "models", "ufld", "SHA256SUMS")
+UFLD_THREADS = 4              # onnxruntime intra-op threads (Part 3 benchmark decides the final value)
+UFLD_RESIZE = "pil"           # exactly like training; do not change
+# Estimator, in REFERENCE coordinates 1280x720 (the training frames); from car_project lane_follow.yaml
+UFLD_IMAGE_CENTER_X = 640
+UFLD_LOOKAHEAD_ROWS = (320, 420)   # offset band, ~42-51 cm ahead of the camera
+UFLD_HEADING_ROWS = (300, 480)
+UFLD_WIDTH_PX_BY_ROW = {300: 994, 320: 1029, 340: 1062, 360: 1096, 380: 1124, 400: 1147,
+                        420: 1172, 440: 1194, 460: 1214, 480: 1220}   # median two-line width, data-v2 labels
+UFLD_WIDTH_LEARN_RATE = 0.05
+UFLD_WIDTH_SCALE_LIMITS = (0.8, 1.2)
+UFLD_MIN_ROWS_IN_BAND = 3
+UFLD_MIN_CONFIDENCE = 0.45
+UFLD_SINGLE_LINE_CONFIDENCE = 0.8
+# Steering for UFLD: offset is normalised (-1..+1 = half a lane width), so gains are per unit offset.
+# Start values = car_project lane_follow.yaml (kp 10, kd 2, turn_limit 15); tune on the track (Part 8).
+STEER_KP_UFLD = 10.0
+STEER_KD_UFLD = 2.0
+STEER_MAX_UFLD = 15.0
+# (Hough uses STEER_KP / STEER_KD / STEER_MAX above, offset in pixels.)
+
+# ---------------------------------------------------------------------------
 # YOLO
 # ---------------------------------------------------------------------------
 YOLO_MODEL_PATH = os.path.join(_HERE, "models", "obstacle_v1_ncnn_model")

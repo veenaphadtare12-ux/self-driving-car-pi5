@@ -10,3 +10,5 @@ vl53l5cx-ctypes
 mpu6050-raspberrypi
 smbus2
 # If `import picamera2` fails with "numpy.dtype size changed", run:  pip install "numpy<2"
+onnxruntime==1.31.0      # UFLD lane model (lanes/ufld.py); same version as ~/car_project
+pillow                   # UFLD preprocessing: PIL bilinear resize exactly as in training (installed: 12.2.0)

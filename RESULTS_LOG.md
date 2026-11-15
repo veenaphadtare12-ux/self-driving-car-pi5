@@ -135,3 +135,34 @@ Scene: car on the track before the crosswalk, toy car ahead in the lane, stop si
 - CPU 49.9 °C idle. RAM 4049 MB total, 2828 MB available, swap 0 used. Disk 81 GB free.
 - Camera: ov5647 detected on CAM1 → Parts 1–3 can use the live camera (replay for repeatable tests).
 - Note: stream_camera.py has an uncommitted 1-line change (except OSError) made outside this session; left as is.
+
+## UFLD integration — Part 1: UFLD in pi_deploy (2026-11-16)
+Copied (not symlinked) from ~/car_project into `models/ufld/` (ONNX files are git-ignored: 152 MB > GitHub's
+100 MB limit; `models/ufld/SHA256SUMS` is committed and matches the car_project originals):
+| file | SHA-256 |
+|---|---|
+| ufld_v2_same_mytrack.onnx | dbee946a71031c8ecef32f7e6ac5ad6f02227e939d6e9e8b8fe46ef385a7d050 |
+| ufld_v2_plus_mytrack.onnx | f8c7ef7bbfde008d00c5aec094cc4fb81fea334285d25596daaeda91abb6fe39 |
+| row_anchors.txt (export/lane_v2, 56 anchors 4…284) | be731a87ef37e23cb2361117999f3e6d50ad034b14682a2cc8cfd0e6f9235989 |
+
+- onnxruntime 1.31.0 installed into the pi_deploy venv (same version as car_project); added to requirements_pi.txt.
+- `lanes/ufld.py`: port of lane_infer.py + perception.py confidence. Preprocessing unchanged: invert → RGB →
+  PIL bilinear 800x288 → ImageNet norm → model → softmax/expectation → 56 anchors → 2 lanes.
+  **Port check: 10 s04 frames, same rows and max |dx| = 0.000000 px vs car_project lane_infer.py.**
+- `lanes/result.py`: LaneResult (left/right points, centre, offset −1…+1 with + = lane centre RIGHT, heading,
+  confidence, lines LR/L/R/none, t, source) + LaneEstimator ported from car/lane_estimator.py (look-ahead band
+  320–420 of 720, single-line fallback with learned width, 3-frame smoothing, heading bias). Works in reference
+  1280x720 coordinates, so 640x480 full-FOV frames give the same geometry.
+- `lanes/hough.py`: wraps the unchanged lane_hough.LaneDetector; decision offset stays in pixels (as calibrated),
+  LaneResult offset = px / (LANE_WIDTH_PX/2). lane_hough.py only gained `self.last_fits` (no behaviour change).
+- `main_demo.py --lane {hough,ufld} [--ufld-model v2_same|v2_plus]`, default `config.LANE_BACKEND = "hough"`.
+  Per-backend steering: Hough = STEER_KP/KD/MAX (unchanged); UFLD = STEER_KP_UFLD 10, STEER_KD_UFLD 2,
+  STEER_MAX_UFLD 15 (car_project start values), passed to decide() as a config view — decision rules unchanged.
+  CSV/HUD offset shows 3/2 decimals for UFLD (Hough format unchanged).
+- Tests: **test_lanes.py 22/22 OK** (sign convention both ways, single L / single R fallback, width learning + limits,
+  empty input, band/rows/confidence gates, smoothing, heading sign + bias, per-backend gains through decide(),
+  Hough sign on synthetic tape images, UFLD colour order/invert, postprocess/anchors, real-model smoke);
+  test_decision 59 OK, test_control 16 OK.
+- Smoke (dry run, 100 s04 frames, no sensors): hough 100 rows OK (~81 FPS; old-mount frames give dropouts with the
+  new ROI, expected); ufld 100 rows DRIVE, offsets 0.0–0.4, **4.1 FPS with UFLD + YOLO in the same loop** (Part 3 threads).
+- Not done in Part 1: heading is computed/logged but decide() has no heading term (would be a rule change).
