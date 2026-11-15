@@ -274,3 +274,23 @@ Both INT8 variants keep ≥ 92 % (plan's condition). **Static INT8 in the full t
 **Proposal:** deploy static INT8 v2_same with UFLD_THREADS 3, YOLO_THREADS 1, RT_YOLO_EVERY_N 3 (lane ~10 fps,
 detection 10 fps, ages < 0.3 s). To apply (needs OK): copy to models/ufld/, add to UFLD_MODELS + SHA256SUMS, run
 test_parity_ufld --path (done above) and a live lane check on the track (the 0.94 accuracy is on s04 frames).
+
+## UFLD integration — Part 4: fail-safes (2026-11-16) — PASS
+`failsafe.py` (checked every control tick; only stops or slows, decide() untouched; a STOP latches until START;
+reason shown on the page and in the CSV `failsafe` column). Values in config (FAILSAFE_*).
+`test_failsafe.py` 11/11 OK — each failure simulated on the threaded runtime (dry run, fake motors), measured:
+| failure (simulated) | required | measured | result |
+|---|---|---|---|
+| lane thread crash (exception) | STOP | next tick ("lane thread crashed") | PASS |
+| detection thread crash | STOP | next tick | PASS |
+| lane output frozen | STOP ≤ 1 s | 1.001 s after the freeze | PASS |
+| detection output frozen | STOP when 1 s without a result | 0.855 s after the freeze (last result was 0.15 s before it) | PASS |
+| camera frozen | STOP ≤ 1 s | 1.051 s (camera + detection stale) | PASS |
+| UFLD < 2.5 fps over 3 s while driving | STOP + offer Hough | 2.95 s after slowing to ~1.7 fps; Hough switch refused while driving, works stopped | PASS |
+| CPU 82 °C | half speed | wheel speeds x 0.5 exactly, keeps driving | PASS |
+| CPU 86 °C | STOP | 0.051 s (next tick) | PASS |
+| under-voltage appears (0x50005) | log + warn | warning on page + CSV, keeps driving; old since-boot flag alone = no warning | PASS |
+| page heartbeat lost while driving | STOP at 1.5 s | 1.552 s after the last heartbeat; regular heartbeats keep driving | PASS |
+| STOP latch | stays stopped after recovery | stays STOPPED until START | PASS |
+Note: with the FP32 setting (lane ~3.3 fps live) the UFLD-unhealthy margin is 0.8 fps; checked in the Part 6 soak.
+Regression: decision 59, control 16, lanes 22, runtime 14 OK.
