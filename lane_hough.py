@@ -85,6 +85,9 @@ class LaneDetector:
             slope = (y2 - y1) / (x2 - x1 + 1e-6)
             if abs(slope) < c.HOUGH_MIN_ABS_SLOPE:
                 continue
+            max_slope = getattr(c, "HOUGH_MAX_ABS_SLOPE", None)
+            if max_slope is not None and abs(slope) > max_slope:
+                continue  # near-vertical clutter (poles, obstacle edges)
             # x at the lookahead row for this segment (x = a*y + b)
             a = (x2 - x1) / (y2 - y1)
             x_look = x1 + a * (y_look - y1)

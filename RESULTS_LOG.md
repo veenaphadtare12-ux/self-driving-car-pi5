@@ -109,3 +109,22 @@ Colour check (2026-11-15, live frame from `stream_camera.py`): orange wrist thre
 cloth blue, skin tones normal → R/B **not swapped**, CAM_FORMAT RGB888 is correct. Overall blue cast =
 auto white balance in dim indoor light, not a channel bug. **Stage 2: PASS.**
 `stream_camera.py` added: browser MJPEG preview on :8000 (centre lines; `--flip` for 180°).
+
+## Stages 0, 4, 5, 5b, 6 on the track (2026-11-16) — camera fixed
+Scene: car on the track before the crosswalk, toy car ahead in the lane, stop sign on the left.
+- **Stage 0:** test_decision 59 OK, test_control 16 OK (tracebacks are injected faults).
+- **Stage 4 lane — FAIL with old ROI, PASS after retune.** Camera is aimed far ahead (needed to see the
+  signs), so the tape is only visible in rows ~80–330; old ROI 280–480 saw a sliver of the left line and
+  gave offset −172 px with the car centred. Toy-car shadow and crosswalk stripes also matched the black mask.
+  Changes: ROI 120–340, LOOKAHEAD_ROW 200, LANE_WIDTH_PX 450, HOUGH_MIN_LINE_LEN 80 (drops crosswalk
+  stripes), new HOUGH_MAX_ABS_SLOPE 3.0 in lane_hough.py (drops sign pole / obstacle edges; lane lines ≈1).
+  Live 900 frames: both lines every frame (hough), 0 lost, offset −2…−8 px centred.
+  Not yet checked: sign of the offset when the car is pushed sideways; plain stretch/curves.
+  Crosswalk stripes still enter the ROI as the car drives over them (filtered by length, watch in stage 7).
+- **Stage 5 YOLO:** car conf 0.93 (in corridor), stop_sign conf ~0.68, ~35 FPS / 27 ms, fans ON→OFF.
+- **Stage 5b signals:** stop_sign h 0.105–0.108, x 0.05 (left edge — leaves the frame if closer).
+  STOP_SIGN_HEIGHT_RATIO 0.3 → **0.10**. No traffic light in view: RED_LIGHT_HEIGHT_RATIO / SIGNAL_REGION_X
+  unchanged (lights expected on the right; this sign is on the left, but stop signs ignore SIGNAL_REGION_X).
+- **Stage 6 dry-run (live, stationary):** 450 frames, STOP_OBSTACLE 448 / CAUTION 2, ToF 340 mm matches
+  the toy car, commands 0/0, ~36 FPS, dry.mp4 + logs/run_20261116_001647.csv. Lane-following commands not
+  yet exercised (obstacle in the way). STEER_KD still 0.1 (0.03 recommended, awaiting OK).

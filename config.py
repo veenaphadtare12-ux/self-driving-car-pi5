@@ -106,18 +106,19 @@ HSV_UPPER = (179, 255, 80)
 LANE_MODE = "two_lines"
 
 # Rows of the 480-row image that are searched (bottom part, nearest the car)
-ROI_TOP = 280
-ROI_BOTTOM = 480
-LOOKAHEAD_ROW = 400           # row where the lane center is measured
-LANE_WIDTH_PX = 400           # lane width at LOOKAHEAD_ROW, used when only one line is seen
+ROI_TOP = 120               # tape is only visible above ~row 330 (camera aimed far to see signs)
+ROI_BOTTOM = 340
+LOOKAHEAD_ROW = 200           # row where the lane center is measured
+LANE_WIDTH_PX = 450           # lane width at LOOKAHEAD_ROW, used when only one line is seen
 
 MORPH_KERNEL = 5
 CANNY_LOW, CANNY_HIGH = 50, 150
 HOUGH_RHO = 1
 HOUGH_THRESHOLD = 30
-HOUGH_MIN_LINE_LEN = 30
+HOUGH_MIN_LINE_LEN = 80       # drops short crosswalk stripes
 HOUGH_MAX_LINE_GAP = 20
 HOUGH_MIN_ABS_SLOPE = 0.3     # ignore near-horizontal segments
+HOUGH_MAX_ABS_SLOPE = 3.0     # ignore near-vertical segments (sign poles, obstacle edges); None = off
 MIN_MASK_PIXELS = 300         # less than this in the ROI = no lane
 
 # ---------------------------------------------------------------------------
@@ -186,7 +187,7 @@ RED_TIMEOUT_S = 10.0          # STOP_RED ends after this long with neither red n
 # then drive on and ignore stop signs for STOP_SIGN_IGNORE_S.
 STOP_SIGN_CLASS = "stop_sign"
 STOP_SIGN_CONF = 0.5
-STOP_SIGN_HEIGHT_RATIO = 0.3  # box height >= this fraction of the frame (no dataset box reaches it!)
+STOP_SIGN_HEIGHT_RATIO = 0.10 # measured 0.106 at the stop line 2026-11-16; sign leaves the frame if closer
 STOP_SIGN_CONFIRM_CHECKS = 3
 STOP_SIGN_WAIT_S = 3.0
 STOP_SIGN_IGNORE_S = 5.0
