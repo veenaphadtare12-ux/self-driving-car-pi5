@@ -62,3 +62,13 @@ Gyro z at rest within ±0.5 rad/s.
 **Issue:** one run started with 2449 × `OSError 121 Remote I/O` from the ToF and 0x29 vanished
 from the bus, then the test hung on Ctrl+C (needed kill -9). Next two runs were clean (0 errors).
 Suspect loose ToF wiring; recheck if it repeats. Run with `timeout -k 3 -s INT N` meanwhile.
+
+## Offline checks on old car_project frames (2026-11-15) — while the camera is broken
+40 frames from `~/car_project/debug/camera_check_frames*` (1280x720, packed into an mp4 via `--source`).
+These are old photos, not a substitute for stages 4/5 on the live camera.
+- **YOLO (stage 5 software):** NCNN model loads, ~26–30 ms/frame, **~36 FPS** at imgsz 416.
+  Fans ON at start, OFF at exit. No detections (the frames contain no obstacles), as expected.
+- **Lane (stage 4 software):** with the default white-tape HSV, no lane in 0/40. **The track tape is
+  black.** Trial override HSV_LOWER=(0,0,0), HSV_UPPER=(179,255,80) on frames resized to 640x480:
+  lane found 20/20 (hough), right line tracked well. V<=60 finds nothing; V<=100 also works.
+  config.py NOT changed yet. Tune with tune_hsv.py on live frames once the camera works.
