@@ -232,7 +232,9 @@ class TestMotorsBrake(MotorTestBase):
     def test_drive_forward(self):
         self.m.drive(30, 30)
         self.assertEqual(self.lg.pwms(), (30.0, 30.0))
-        self.assertEqual(self.lg.ins(), (0, 1, 1, 0))   # left inverted, right not
+        fwd = lambda inv: (0, 1) if inv else (1, 0)     # (IN1, IN2) for forward
+        self.assertEqual(self.lg.ins(),
+                         fwd(config.LEFT_INVERT) + fwd(config.RIGHT_INVERT))
 
     def test_stop_brakes_then_coasts(self):
         self.m.drive(30, 30)
