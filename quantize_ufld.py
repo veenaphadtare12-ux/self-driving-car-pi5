@@ -52,8 +52,15 @@ def main(which):
                          op_types_to_quantize=["MatMul", "Gemm"])
         print("dyn_fc_int8 done")
     if "static" in which:
+        import onnx
+        from onnx import version_converter
+        pre13 = os.path.join(OUT, "ufld_v2_same_pre_op13.onnx")
+        mm = onnx.load(pre)
+        if mm.opset_import[0].version < 13:      # per-channel DequantizeLinear needs opset >= 13
+            mm = version_converter.convert_version(mm, 13)
+        onnx.save(mm, pre13)
         m = UfldModel(src, threads=4)
-        quantize_static(pre, os.path.join(OUT, "ufld_v2_same_static_int8.onnx"), Calib(m),
+        quantize_static(pre13, os.path.join(OUT, "ufld_v2_same_static_int8.onnx"), Calib(m),
                         quant_format=QuantFormat.QDQ, per_channel=True,
                         activation_type=QuantType.QUInt8, weight_type=QuantType.QInt8)
         print("static_int8 done")

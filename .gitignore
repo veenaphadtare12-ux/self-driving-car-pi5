@@ -6,3 +6,4 @@ lane_frames/
 yolo_frames/
 models/ufld/*.onnx
 replay/
+models/ufld/candidates/

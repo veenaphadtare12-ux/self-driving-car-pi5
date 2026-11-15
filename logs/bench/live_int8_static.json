@@ -1,0 +1,306 @@
+[
+ {
+  "lane_fps": 8.3,
+  "det_fps": 15.0,
+  "cam_fps": 30.0,
+  "ctrl_hz": 20.0,
+  "period_ms": {
+   "n": 599,
+   "mean": 50.0,
+   "p99": 53.5,
+   "max": 55.9,
+   "min": 44.4
+  },
+  "overruns": 0,
+  "tick_ms": {
+   "n": 600,
+   "mean": 0.41,
+   "p99": 2.06,
+   "max": 5.79,
+   "min": 0.14
+  },
+  "lane_age": {
+   "n": 600,
+   "mean": 0.198,
+   "p99": 0.275,
+   "max": 0.325,
+   "min": 0.119
+  },
+  "det_age": {
+   "n": 600,
+   "mean": 0.098,
+   "p99": 0.137,
+   "max": 0.17,
+   "min": 0.054
+  },
+  "lane_latency": {
+   "n": 250,
+   "mean": 0.139,
+   "p99": 0.17,
+   "max": 0.211,
+   "min": 0.113
+  },
+  "det_latency": {
+   "n": 600,
+   "mean": 0.063,
+   "p99": 0.086,
+   "max": 0.116,
+   "min": 0.053
+  },
+  "lane_proc_ms": {
+   "n": 291,
+   "mean": 119.9,
+   "p99": 135.3,
+   "max": 193.9,
+   "min": 107.5
+  },
+  "det_proc_ms": {
+   "n": 524,
+   "mean": 62.4,
+   "p99": 76.7,
+   "max": 114.5,
+   "min": 53.0
+  },
+  "temp_c": 63.35,
+  "temp_max": 65.0,
+  "throttled_seen": "0x0",
+  "rss_mb": 557.9,
+  "errors": [],
+  "mode": "live",
+  "ufld_threads": 2,
+  "ncnn_threads": 1,
+  "every": 2,
+  "spin": 0,
+  "busy": 1.93,
+  "loop_steady": true,
+  "fails": []
+ },
+ {
+  "lane_fps": 9.13,
+  "det_fps": 10.0,
+  "cam_fps": 30.0,
+  "ctrl_hz": 20.0,
+  "period_ms": {
+   "n": 599,
+   "mean": 50.0,
+   "p99": 54.6,
+   "max": 54.7,
+   "min": 44.9
+  },
+  "overruns": 0,
+  "tick_ms": {
+   "n": 600,
+   "mean": 0.28,
+   "p99": 0.8,
+   "max": 4.22,
+   "min": 0.14
+  },
+  "lane_age": {
+   "n": 600,
+   "mean": 0.183,
+   "p99": 0.265,
+   "max": 0.317,
+   "min": 0.109
+  },
+  "det_age": {
+   "n": 600,
+   "mean": 0.107,
+   "p99": 0.178,
+   "max": 0.186,
+   "min": 0.06
+  },
+  "lane_latency": {
+   "n": 274,
+   "mean": 0.126,
+   "p99": 0.158,
+   "max": 0.209,
+   "min": 0.102
+  },
+  "det_latency": {
+   "n": 600,
+   "mean": 0.065,
+   "p99": 0.085,
+   "max": 0.127,
+   "min": 0.053
+  },
+  "lane_proc_ms": {
+   "n": 320,
+   "mean": 109.1,
+   "p99": 126.8,
+   "max": 187.9,
+   "min": 99.9
+  },
+  "det_proc_ms": {
+   "n": 350,
+   "mean": 64.7,
+   "p99": 84.9,
+   "max": 123.4,
+   "min": 52.8
+  },
+  "temp_c": 63.9,
+  "temp_max": 65.55,
+  "throttled_seen": "0x0",
+  "rss_mb": 647.6,
+  "errors": [],
+  "mode": "live",
+  "ufld_threads": 2,
+  "ncnn_threads": 1,
+  "every": 3,
+  "spin": 0,
+  "busy": 1.64,
+  "loop_steady": true,
+  "fails": []
+ },
+ {
+  "lane_fps": 9.8,
+  "det_fps": 14.07,
+  "cam_fps": 30.33,
+  "ctrl_hz": 20.0,
+  "period_ms": {
+   "n": 599,
+   "mean": 50.0,
+   "p99": 53.4,
+   "max": 60.4,
+   "min": 40.0
+  },
+  "overruns": 0,
+  "tick_ms": {
+   "n": 600,
+   "mean": 0.38,
+   "p99": 1.41,
+   "max": 3.69,
+   "min": 0.13
+  },
+  "lane_age": {
+   "n": 600,
+   "mean": 0.17,
+   "p99": 0.241,
+   "max": 0.254,
+   "min": 0.102
+  },
+  "det_age": {
+   "n": 600,
+   "mean": 0.122,
+   "p99": 0.179,
+   "max": 0.197,
+   "min": 0.065
+  },
+  "lane_latency": {
+   "n": 294,
+   "mean": 0.119,
+   "p99": 0.15,
+   "max": 0.161,
+   "min": 0.093
+  },
+  "det_latency": {
+   "n": 600,
+   "mean": 0.086,
+   "p99": 0.115,
+   "max": 0.123,
+   "min": 0.061
+  },
+  "lane_proc_ms": {
+   "n": 341,
+   "mean": 102.6,
+   "p99": 122.4,
+   "max": 133.0,
+   "min": 89.0
+  },
+  "det_proc_ms": {
+   "n": 493,
+   "mean": 70.8,
+   "p99": 92.1,
+   "max": 101.0,
+   "min": 57.2
+  },
+  "temp_c": 64.45,
+  "temp_max": 66.65,
+  "throttled_seen": "0x0",
+  "rss_mb": 682.3,
+  "errors": [],
+  "mode": "live",
+  "ufld_threads": 3,
+  "ncnn_threads": 1,
+  "every": 2,
+  "spin": 0,
+  "busy": 2.0,
+  "loop_steady": true,
+  "fails": []
+ },
+ {
+  "lane_fps": 10.27,
+  "det_fps": 10.0,
+  "cam_fps": 30.0,
+  "ctrl_hz": 20.0,
+  "period_ms": {
+   "n": 599,
+   "mean": 50.0,
+   "p99": 53.2,
+   "max": 57.7,
+   "min": 42.2
+  },
+  "overruns": 0,
+  "tick_ms": {
+   "n": 600,
+   "mean": 0.3,
+   "p99": 1.26,
+   "max": 4.42,
+   "min": 0.14
+  },
+  "lane_age": {
+   "n": 600,
+   "mean": 0.16,
+   "p99": 0.232,
+   "max": 0.269,
+   "min": 0.099
+  },
+  "det_age": {
+   "n": 600,
+   "mean": 0.123,
+   "p99": 0.18,
+   "max": 0.201,
+   "min": 0.07
+  },
+  "lane_latency": {
+   "n": 309,
+   "mean": 0.115,
+   "p99": 0.144,
+   "max": 0.161,
+   "min": 0.089
+  },
+  "det_latency": {
+   "n": 600,
+   "mean": 0.075,
+   "p99": 0.099,
+   "max": 0.139,
+   "min": 0.061
+  },
+  "lane_proc_ms": {
+   "n": 358,
+   "mean": 97.5,
+   "p99": 112.6,
+   "max": 141.7,
+   "min": 84.5
+  },
+  "det_proc_ms": {
+   "n": 349,
+   "mean": 74.9,
+   "p99": 98.1,
+   "max": 138.4,
+   "min": 61.3
+  },
+  "temp_c": 63.35,
+  "temp_max": 66.1,
+  "throttled_seen": "0x0",
+  "rss_mb": 721.3,
+  "errors": [],
+  "mode": "live",
+  "ufld_threads": 3,
+  "ncnn_threads": 1,
+  "every": 3,
+  "spin": 0,
+  "busy": 1.75,
+  "loop_steady": true,
+  "fails": []
+ }
+]

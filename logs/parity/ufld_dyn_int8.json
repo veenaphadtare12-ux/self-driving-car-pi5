@@ -1,0 +1,20 @@
+{
+ "model": "models/ufld/candidates/ufld_v2_same_dyn_int8.onnx",
+ "all": {
+  "n_val": 578,
+  "point_accuracy": 0.9362529048801987,
+  "mean_abs_error_px": 6.395114494080411,
+  "lane_precision": 0.9240506329113924,
+  "lane_recall": 0.9582338902147971
+ },
+ "subset150": {
+  "n_val": 150,
+  "point_accuracy": 0.943206437635407,
+  "mean_abs_error_px": 6.326516536540633,
+  "lane_precision": 0.9177489177489178,
+  "lane_recall": 0.9636363636363636
+ },
+ "ref_row_mismatch": 0,
+ "ref_max_dx": 0.0,
+ "pass": true
+}

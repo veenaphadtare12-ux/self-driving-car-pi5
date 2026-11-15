@@ -55,9 +55,13 @@ def main():
     ap.add_argument("--warmup", type=float, default=6.0)
     ap.add_argument("--no-sensors", action="store_true")
     ap.add_argument("--model", default=config.UFLD_MODEL)
+    ap.add_argument("--model-path", default=None, help="benchmark this ONNX file (e.g. an INT8 candidate)")
     ap.add_argument("--json", default=None)
     a = ap.parse_args()
 
+    if a.model_path:
+        config.UFLD_MODELS["candidate"] = os.path.abspath(a.model_path)
+        a.model = "candidate"
     from fans import Fans
     from lanes.ufld import UfldLane
     from run_threaded import make_detector, open_source

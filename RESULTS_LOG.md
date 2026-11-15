@@ -254,3 +254,23 @@ x 0.01–0.33); large lights sit at x 0.00–0.03, cut off by the frame edge. Co
 Decision needed at Part 8.3 (not changed): put the light where it stands on the demo track, set SIGNAL_REGION_X to
 that side, and pick RED_LIGHT_HEIGHT_RATIO at a size where the light is still fully in view (~0.12 here).
 **YOLO NCNN vs best.pt:** still not run — ~/best.pt not present (checked 03:30).
+
+### Part 3 addendum: INT8 UFLD — PROPOSAL (measured, NOT applied; config still uses the FP32 model)
+`quantize_ufld.py` (onnx 1.23.2 in a separate venv ~/quant_env; pi_deploy venv unchanged). Candidates in
+models/ufld/candidates/ (git-ignored). static_int8 SHA-256 d50f3deae53ea9f944b491d57851ce7d8beff8dc82bf74598fbe7b0fb1153e4a.
+| model | size | model ms (4 thr, alone) | point acc all 578 | 150 subset | precision / recall |
+|---|---|---|---|---|---|
+| FP32 v2_same (deployed) | 76 MB | 197–203 | 0.9373 | 0.9448 | 0.915 / 0.962 |
+| dynamic INT8 (all ops) | 38 MB | 145 | 0.9363 | 0.9432 | 0.924 / 0.958 |
+| dynamic INT8 (FC head only) | 72 MB | 191 | not measured (no speed gain) | | |
+| **static INT8 QDQ per-channel** (opset 11→13, 120 calibration frames from s01–s07, never s04) | 38 MB | **53** | **0.9405** | **0.9496** | 0.916 / 0.964 |
+Both INT8 variants keep ≥ 92 % (plan's condition). **Static INT8 in the full threaded runtime, live camera, 30 s:**
+| UFLD thr | NCNN thr | N | lane fps | det fps | lane age mean/max | det age max | Hz | temp | targets |
+|---|---|---|---|---|---|---|---|---|---|
+| 2 | 1 | 2 | 8.30 | 15.0 | 0.198 / 0.325 | 0.170 | 20.00 | 65.0 | MEETS ALL |
+| 2 | 1 | 3 | 9.13 | 10.0 | 0.183 / 0.317 | 0.186 | 20.00 | 65.5 | MEETS ALL |
+| 3 | 1 | 2 | 9.80 | 14.1 | 0.170 / 0.254 | 0.197 | 20.00 | 66.7 | MEETS ALL |
+| 3 | 1 | 3 | **10.27** | 10.0 | 0.160 / **0.269** | 0.201 | 20.00 | 66.1 | MEETS ALL |
+**Proposal:** deploy static INT8 v2_same with UFLD_THREADS 3, YOLO_THREADS 1, RT_YOLO_EVERY_N 3 (lane ~10 fps,
+detection 10 fps, ages < 0.3 s). To apply (needs OK): copy to models/ufld/, add to UFLD_MODELS + SHA256SUMS, run
+test_parity_ufld --path (done above) and a live lane check on the track (the 0.94 accuracy is on s04 frames).
