@@ -166,3 +166,30 @@ Copied (not symlinked) from ~/car_project into `models/ufld/` (ONNX files are gi
 - Smoke (dry run, 100 s04 frames, no sensors): hough 100 rows OK (~81 FPS; old-mount frames give dropouts with the
   new ROI, expected); ufld 100 rows DRIVE, offsets 0.0–0.4, **4.1 FPS with UFLD + YOLO in the same loop** (Part 3 threads).
 - Not done in Part 1: heading is computed/logged but decide() has no heading term (would be a rule change).
+
+## UFLD integration — Part 2: parity (2026-11-16)
+**UFLD — PASS.** `test_parity_ufld.py` = car_project `benchmark_lane_model.accuracy()` metric copied unchanged,
+detector = pi_deploy `lanes/ufld.py` (v2_same, 4 threads, PIL resize). Frames: s04 val (car_project export/lane_v2).
+| set | point acc | mean |err| px | lane precision | lane recall |
+|---|---|---|---|---|---|
+| all 578 s04 val | **0.9373** | 6.36 | 0.915 | 0.962 |
+| 150 evenly spaced | **0.9448** | 6.29 | 0.918 | 0.964 |
+Reference (car_project PROGRESS.md, all 578): 0.9373 → identical. Threshold 0.930 met on both sets.
+Point-by-point vs car_project `lane_infer.LaneDetector` on all 578 frames: 0 row-set mismatches, max |dx| 0.000000 px.
+Pipeline 224 ms/frame median (4.5 fps, UFLD alone). Output: logs/parity/ufld_v2_same.{txt,json}.
+(Note: there are 578 s04 val labels, not 150 — both reported.)
+
+**YOLO red-never-green — PASS.** `test_parity_yolo.py`, NCNN through pi_deploy ObstacleDetector (imgsz 416),
+scanned at conf 0.10, judged at YOLO_CONF 0.4. Frames: car_project export/obstacles_v1 train+valid, scene from file name.
+| scene | frames | correct colour ≥0.4 | wrong colour ≥0.4 | max wrong-colour conf |
+|---|---|---|---|---|
+| s5_signal_red | 292 | 187 (64 %) | **0** light_green | 0.214 |
+| s06_signal_green | 276 | 208 (75 %) | **0** light_red | 0.155 |
+Caveat: these images were most likely in the Roboflow training export → checks export + wrapper, not generalisation.
+Detection rate < 100 % includes frames where the light is far / out of view (not labelled per frame).
+
+**YOLO NCNN vs Ultralytics PyTorch — NOT RUN.** The fine-tuned .pt (trained on Windows,
+`self_driving_car_training/.../roboflow_export`, 2026-11-14) is not on the Pi (~/robotex_ai/best.pt is an unrelated
+1-class "Flame" model). Ready to run: `python test_parity_yolo.py --ref path/to/best.pt` (box match IoU ≥ 0.5,
+FAIL on any red↔green change or < 95 % of reference boxes matched).
+Regression: test_decision 59 OK, test_control 16 OK, test_lanes 22 OK.

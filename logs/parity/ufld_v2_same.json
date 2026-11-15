@@ -1,0 +1,20 @@
+{
+ "model": "v2_same",
+ "all": {
+  "n_val": 578,
+  "point_accuracy": 0.9373347223335203,
+  "mean_abs_error_px": 6.359252021333146,
+  "lane_precision": 0.9148694665153235,
+  "lane_recall": 0.9618138424821002
+ },
+ "subset150": {
+  "n_val": 150,
+  "point_accuracy": 0.9447539461467038,
+  "mean_abs_error_px": 6.294410792468985,
+  "lane_precision": 0.9177489177489178,
+  "lane_recall": 0.9636363636363636
+ },
+ "ref_row_mismatch": 0,
+ "ref_max_dx": 0.0,
+ "pass": true
+}

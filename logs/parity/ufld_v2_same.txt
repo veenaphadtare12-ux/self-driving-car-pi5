@@ -1,0 +1,11 @@
+model ufld_v2_same_mytrack.onnx | 578 s04 val frames (subset 150 evenly spaced) | threads 4 | reference check on
+  100/578  47 s
+  200/578  94 s
+  300/578  140 s
+  400/578  186 s
+  500/578  233 s
+ALL   : {'n_val': 578, 'point_accuracy': 0.9373, 'mean_abs_error_px': 6.3593, 'lane_precision': 0.9149, 'lane_recall': 0.9618}
+SUB150: {'n_val': 150, 'point_accuracy': 0.9448, 'mean_abs_error_px': 6.2944, 'lane_precision': 0.9177, 'lane_recall': 0.9636}
+detect median 224 ms (4.5 fps, pipeline only)
+vs car_project LaneDetector: lane row-set mismatches 0, max |dx| 0.000000 px
+reference 0.9373 (car_project, all 578) | threshold 0.93 -> PASS

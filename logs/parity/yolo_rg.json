@@ -1,0 +1,19 @@
+{
+ "red_green": {
+  "red": {
+   "frames": 292,
+   "with_light_red": 187,
+   "with_light_green": 0,
+   "max_light_green_conf": 0.214,
+   "bad_files": []
+  },
+  "green": {
+   "frames": 276,
+   "with_light_green": 208,
+   "with_light_red": 0,
+   "max_light_red_conf": 0.155,
+   "bad_files": []
+  }
+ },
+ "pass": true
+}
