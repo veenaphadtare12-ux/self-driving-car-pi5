@@ -72,3 +72,10 @@ These are old photos, not a substitute for stages 4/5 on the live camera.
   black.** Trial override HSV_LOWER=(0,0,0), HSV_UPPER=(179,255,80) on frames resized to 640x480:
   lane found 20/20 (hough), right line tracked well. V<=60 finds nothing; V<=100 also works.
   config.py NOT changed yet. Tune with tune_hsv.py on live frames once the camera works.
+
+## Stage 3b: ToF calibration (2026-11-15) — NOT PASSED YET
+Run 1: ToF + both US read a flat ~290–320 mm on most of the 8x8 grid in BOTH steps (empty / box at 400 mm);
+only the top corners saw 2–3 m. Uniform distance = a surface ~30 cm ahead, not a floor gradient.
+Run 2: **ToF init failed** (`OSError 121` during firmware upload; 0x29 back on the bus afterwards):
+2nd ToF I2C dropout today → reseat/solder ToF wiring. US again constant (FL 313, FR 295) in both steps.
+No config change. To do: confirm nothing within 30 cm / sensors not aimed down, fix ToF wiring, re-run.
