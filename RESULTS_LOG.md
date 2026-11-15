@@ -128,3 +128,10 @@ Scene: car on the track before the crosswalk, toy car ahead in the lane, stop si
 - **Stage 6 dry-run (live, stationary):** 450 frames, STOP_OBSTACLE 448 / CAUTION 2, ToF 340 mm matches
   the toy car, commands 0/0, ~36 FPS, dry.mp4 + logs/run_20261116_001647.csv. Lane-following commands not
   yet exercised (obstacle in the way). STEER_KD still 0.1 (0.03 recommended, awaiting OK).
+
+## UFLD integration — Part 0: safety tag and checks (2026-11-16 00:25)
+- Tag **pre-ufld** → 9e2481d (Hough lane + YOLO, STEER_KD 0.03, live_ufld_yolo.py viewer). Return: `git checkout pre-ufld`.
+- Power: `get_throttled=0x0` (no under-voltage / throttling, now or since boot); EXT5V 5.25 V; core 0.84 V.
+- CPU 49.9 °C idle. RAM 4049 MB total, 2828 MB available, swap 0 used. Disk 81 GB free.
+- Camera: ov5647 detected on CAM1 → Parts 1–3 can use the live camera (replay for repeatable tests).
+- Note: stream_camera.py has an uncommitted 1-line change (except OSError) made outside this session; left as is.
