@@ -41,3 +41,18 @@ Wheels lifted. Runs at 30 % with the one-step runner (forward/backward/left 3–
   config.py; `LEFT_INVERT`/`RIGHT_INVERT` stay False. Fix: re-solder the left front motor's
   two wires swapped, then re-run FORWARD/BACKWARD/LEFT/RIGHT.
 - RIGHT step not yet run.
+
+## Stage 2: Camera (2026-11-15) — FAIL (hardware)
+`Picamera2()` → "No camera number 0 found"; `rpicam-hello --list-cameras` → "No cameras available!".
+Not detected at boot (camera_auto_detect=1). Camera worked earlier in car_project → likely ribbon
+cable loose/flipped. To do: power off, re-seat ribbon in CAM/DISP 0, re-run test_camera.py.
+
+## Stage 3: Distance sensors (2026-11-15) — PASS (one I2C dropout seen)
+i2cdetect: 0x29 (VL53L5CX), 0x68 (MPU6050). ToF ranging at 15 Hz; both ultrasonics in alert mode.
+Hand test (centre → left → right, ~40 cm in to ~4 cm and back): ToF, US-FL and US-FR all track
+the hand smoothly (ToF 419 → 42 mm; US-FL/FR agree with ToF within ~10–40 mm when the hand
+covers them). Ultrasonics show frequent "-" (no echo) on a hand, expected for a small soft target.
+Gyro z at rest within ±0.5 rad/s.
+**Issue:** one run started with 2449 × `OSError 121 Remote I/O` from the ToF and 0x29 vanished
+from the bus, then the test hung on Ctrl+C (needed kill -9). Next two runs were clean (0 errors).
+Suspect loose ToF wiring; recheck if it repeats. Run with `timeout -k 3 -s INT N` meanwhile.
