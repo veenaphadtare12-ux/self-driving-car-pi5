@@ -73,9 +73,17 @@ These are old photos, not a substitute for stages 4/5 on the live camera.
   lane found 20/20 (hough), right line tracked well. V<=60 finds nothing; V<=100 also works.
   config.py NOT changed yet. Tune with tune_hsv.py on live frames once the camera works.
 
-## Stage 3b: ToF calibration (2026-11-15) — NOT PASSED YET
+## Stage 3b: ToF calibration (2026-11-15) — PASS (3rd run)
 Run 1: ToF + both US read a flat ~290–320 mm on most of the 8x8 grid in BOTH steps (empty / box at 400 mm);
 only the top corners saw 2–3 m. Uniform distance = a surface ~30 cm ahead, not a floor gradient.
 Run 2: **ToF init failed** (`OSError 121` during firmware upload; 0x29 back on the bus afterwards):
 2nd ToF I2C dropout today → reseat/solder ToF wiring. US again constant (FL 313, FR 295) in both steps.
 No config change. To do: confirm nothing within 30 cm / sensors not aimed down, fix ToF wiring, re-run.
+Run 3 (after rewiring/clearing the front): ToF init OK.
+- Empty track: ToF center zones all no-target/inf → OK. Close readings only in rows 6–7 (floor, ~400 mm)
+  and corners, which are not used for decisions. US still see ~FL 470 / FR 438 mm on the empty track
+  (floor echo or aimed slightly down). Harmless: decision.py uses US only for the safety net
+  (BOTH < 200 mm). Optional: tilt the US up a little.
+- Object at 400 mm: first samples ToF 418, US FL 414, FR 399 → within ±50. The object then moved
+  (in to ~160 mm, out to ~330), so the summary medians/"error -110" are not meaningful; all three
+  sensors tracked each other within ~10–30 mm through the sweep. No config change.
