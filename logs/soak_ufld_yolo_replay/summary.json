@@ -1,0 +1,74 @@
+{
+ "minutes": 10.0,
+ "samples": 120,
+ "ctrl_hz": {
+  "mean": 20.18,
+  "min": 20.0,
+  "max": 20.3
+ },
+ "lane_fps": {
+  "mean": 9.98,
+  "min": 8.3,
+  "max": 10.3
+ },
+ "det_fps": {
+  "mean": 10.0,
+  "min": 9.7,
+  "max": 10.3
+ },
+ "view_fps": {
+  "mean": 9.91,
+  "min": 9.0,
+  "max": 10.0
+ },
+ "lane_age_tick": {
+  "mean": 0.168,
+  "max": 0.37,
+  "p99": 0.231
+ },
+ "det_age_tick": {
+  "mean": 0.13,
+  "max": 0.243,
+  "p99": 0.18
+ },
+ "csv_ticks": 12013,
+ "csv_ticks_expected": 12014,
+ "states": {
+  "STOP_OBSTACLE": 12013
+ },
+ "temp_curve_per_min": [
+  66.1,
+  65.0,
+  64.5,
+  63.4,
+  65.5,
+  65.5,
+  64.5,
+  63.9,
+  65.0,
+  65.5
+ ],
+ "temp_max": 67.8,
+ "throttled_seen": [
+  "0x0"
+ ],
+ "rss_start_mb": 530.2,
+ "rss_1min_mb": 534.7,
+ "rss_end_mb": 535.3,
+ "rss_growth_pct": 0.11,
+ "exceptions_csv": 0,
+ "tracebacks_in_server_log": 0,
+ "failsafe_stops": [],
+ "video": "P7_20261116_134631.mp4",
+ "video_frames": 5944,
+ "video_frames_expected": 6007,
+ "stream_frames_received": 5944,
+ "power_log": {
+  "n": 60,
+  "throttled_values": [
+   "0x0"
+  ],
+  "ext5v_min": 5.0853,
+  "ext5v_max": 5.1992
+ }
+}

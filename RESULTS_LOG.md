@@ -365,3 +365,31 @@ Soak tests now log `get_throttled` every 10 s.
 | ufld_yolo (INT8 + YOLO) | **11.10** | 10.00 | 20.00 | 0 | 0.151 / 0.244 | 0.183 | 68.3 | MEETS ALL |
 Note: ufld_solo is fast enough by FPS (≥ 4) but its lane age max misses the 0.4 s target (FP32 ~200 ms per frame).
 Tests: profiles 6, decision 59, control 16, lanes 22, runtime 15, failsafe 11, web 10, stream_camera 2 — all OK.
+
+## UFLD integration — Part 6: soak test (2026-11-16 13:35–14:18) — PASS
+`soak_all.sh 10` (4 × 10 min, DRY RUN locked: replay = --source obstacles/s3 --no-sensors, live = --dry-run with sensors)
++ `soak_check.py` (controlling browser with heartbeat, MJPEG page view open, RECORD on, P7, START; /status every 5 s;
+`get_throttled` + EXT5V + temperature every 10 s, fsync'd → logs/soak_<profile>_<mode>/power.csv).
+| run | ctrl Hz mean/min | lane fps mean (min) | det fps | lane age at tick mean / p99 / max | det age max | temp per min (max) | RSS start → end | throttled (60 samples) | 5 V min–max | exceptions / fail-safe stops |
+|---|---|---|---|---|---|---|---|---|---|---|
+| ufld_solo replay | 20.14 / 20.0 | 3.87 (3.3) | – | 0.407 / 0.550 / **0.746** | – | 65.5–67.8 (68.3) | 322 → 324 MB (+0.6 %) | 0x0 | 5.10–5.22 | 0 / 0 |
+| ufld_yolo replay | 20.18 / 20.0 | 9.98 (8.3) | 10.0 | 0.168 / 0.231 / 0.370 | 0.243 | 63.4–66.1 (67.8) | 530 → 535 MB (+0.1 %) | 0x0 | 5.09–5.20 | 0 / 0 |
+| ufld_solo live | 20.15 / 20.0 | 4.03 (3.7) | – | 0.388 / 0.524 / **0.783** | – | 66.7–69.4 (70.0) | 345 → 349 MB (+0.8 %) | 0x0 | 5.07–5.20 | 0 / 0 |
+| ufld_yolo live | 20.12 / 19.7 | 10.57 (9.3) | 10.0 | 0.161 / 0.228 / 0.347 | 0.306 | 65.5–68.3 (68.3) | 552 → 560 MB (+1.3 %) | 0x0 | 5.07–5.20 | 0 / 0 |
+- CSV ticks = expected (20/s) in every run; recorded video 5935–5963 frames of ~6007 expected (98.8–99.3 %); page stream ~9.9 fps.
+- One control overrun in total (ufld_yolo live, 12 s after START/RECORD began): one 179 ms period, tick work itself 0.16 ms
+  (thread scheduled late during start-up), never again in 10 min; far below the 1 s stale fail-safe.
+- States as expected: replay s3 = camel in lane → STOP_OBSTACLE (yolo) / DRIVE (solo, no YOLO); live on the desk = mostly
+  STOP_LANE_LOST, safety net STOP_OBSTACLE when something was near the ToF.
+- No power problem while on this supply: throttled 0x0 in all 240 samples, 5 V ≥ 5.07 V.
+**Verdict:** both profiles stable for 10 min each, memory flat, 70 °C max. ufld_yolo (INT8) meets all targets;
+ufld_solo (FP32) misses only the lane-age target (max 0.75–0.78 s, p99 0.52–0.55 s; fail-safe LANE_MAX_AGE_S 0.5 s →
+occasional no-lane ticks are possible).
+
+## UFLD integration — Part 7: pre-flight (2026-11-16 14:18) — 15 PASS, 0 WARN, 0 FAIL
+`./preflight.sh --check-only` (without the flag it then starts `main_demo.py --web --profile ufld_yolo`, STOPPED + DRY RUN):
+camera detected (ov5647) PASS · camera colours PASS (mean B,G,R 75/76/68) · ToF 450 mm PASS · ultrasonic L 1096 / R 202 mm PASS ·
+IMU 0x70 PASS · model checksums PASS (incl. INT8) · models load PASS (v2_same, v2_plus, v2_same_int8, Hough, YOLO) ·
+FPS ufld_solo PASS (lane 4.0, 20 Hz, lane age max 0.566 s) · FPS ufld_yolo PASS (lane 10.5, det 10.0, 20 Hz, age max 0.217 s) ·
+CPU 60.6 °C PASS · throttled 0x0 PASS · disk 84.8 GB PASS · network http://192.168.0.130:8001/ PASS · fans PASS.
+YOLO NCNN-vs-.pt parity: still pending (~/best.pt not on the Pi).

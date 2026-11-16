@@ -1,0 +1,80 @@
+[    60s] ctrl 20.0 lane 4.0 det 0.0 view 9.7 temp 66.1 rss 322 MB state DRIVE
+[   120s] ctrl 20.0 lane 3.7 det 0.0 view 10.0 temp 65.5 rss 322 MB state DRIVE
+[   180s] ctrl 20.0 lane 3.7 det 0.0 view 10.0 temp 67.2 rss 322 MB state DRIVE
+[   240s] ctrl 20.0 lane 4.0 det 0.0 view 10.0 temp 66.1 rss 323 MB state DRIVE
+[   300s] ctrl 20.3 lane 3.7 det 0.0 view 9.7 temp 67.2 rss 323 MB state DRIVE
+[   360s] ctrl 20.3 lane 3.7 det 0.0 view 9.7 temp 66.1 rss 323 MB state DRIVE
+[   420s] ctrl 20.0 lane 4.0 det 0.0 view 9.7 temp 67.8 rss 323 MB state DRIVE
+[   480s] ctrl 20.3 lane 3.7 det 0.0 view 10.0 temp 66.1 rss 324 MB state DRIVE
+[   541s] ctrl 20.3 lane 3.7 det 0.0 view 9.7 temp 67.8 rss 324 MB state DRIVE
+[   601s] ctrl 20.3 lane 4.0 det 0.0 view 10.0 temp 66.1 rss 324 MB state DRIVE
+{
+ "minutes": 10.0,
+ "samples": 120,
+ "ctrl_hz": {
+  "mean": 20.14,
+  "min": 20.0,
+  "max": 20.3
+ },
+ "lane_fps": {
+  "mean": 3.87,
+  "min": 3.3,
+  "max": 4.0
+ },
+ "det_fps": {
+  "mean": 0.0,
+  "min": 0.0,
+  "max": 0.0
+ },
+ "view_fps": {
+  "mean": 9.89,
+  "min": 9.7,
+  "max": 10.0
+ },
+ "lane_age_tick": {
+  "mean": 0.407,
+  "max": 0.746,
+  "p99": 0.55
+ },
+ "det_age_tick": null,
+ "csv_ticks": 12013,
+ "csv_ticks_expected": 12012,
+ "states": {
+  "DRIVE": 12013
+ },
+ "temp_curve_per_min": [
+  66.1,
+  65.5,
+  67.2,
+  66.1,
+  67.2,
+  66.1,
+  67.8,
+  66.1,
+  67.8,
+  66.1
+ ],
+ "temp_max": 68.3,
+ "throttled_seen": [
+  "0x0"
+ ],
+ "rss_start_mb": 322.0,
+ "rss_1min_mb": 322.2,
+ "rss_end_mb": 324.0,
+ "rss_growth_pct": 0.57,
+ "exceptions_csv": 0,
+ "tracebacks_in_server_log": 0,
+ "failsafe_stops": [],
+ "video": "P7_20261116_133557.mp4",
+ "video_frames": 5935,
+ "video_frames_expected": 6006,
+ "stream_frames_received": 5935,
+ "power_log": {
+  "n": 60,
+  "throttled_values": [
+   "0x0"
+  ],
+  "ext5v_min": 5.10004,
+  "ext5v_max": 5.21796
+ }
+}
