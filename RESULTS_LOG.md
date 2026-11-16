@@ -487,3 +487,19 @@ would steer right all the time. Heading is now shown on the page (offset / headi
 the car straight + centred (→ LANE_HEADING_BIAS) and angled left/right (sign) before turning Kh up.
 Page: new sliders Kh and Turn limit (live, saved with Save). Tests: test_decision 59, test_lanes 25 (3 new), test_runtime 15,
 test_web 10, test_profiles 6, test_control 16, test_failsafe 11 — all OK. Replay (s03, P1, DRY RUN, 25 s): 20 Hz, no errors.
+
+## P1 run 2 (19:23, base 20, Kp 20) — FAIL; root cause: LEFT/RIGHT motor sides swapped — FIXED (19:30–19:40)
+Run 2 (`logs/p8_p1b/status_192146.jsonl`): started at offset +0.04, the controller steered right (L 20.5/R 18.8 → L 32/R 0)
+and the offset grew +0.10 → +0.42 → +1.00 in 2.5 s, lane lost; same pattern after restarts. Run 1 was the mirror image
+(offset −0.006 → −0.9 while steering left). Every correction made the error bigger → one sign in the loop was wrong.
+- Camera NOT mirrored: user's hand on the car's left (standing behind) appears on the image left, and US front-left read
+  51 mm vs front-right 863 mm (`logs/heading_check/hand_on_left_*.jpg`).
+- So the motor sides were swapped: config LEFT = 23/24/13 drove the real RIGHT wheels (probably since the left-front
+  re-solder; Stage 1 and the hand-push check depended on the viewer's side). Fix: config.py LEFT = 22/27/12,
+  RIGHT = 23/24/13 (motors.py unchanged). Tests all OK.
+- Proof on the track (page as camera only, `--dry-run`): pulse L 25 / R 0 for 0.4 s → offset +0.04 → −0.56, heading
+  +0.035 → −0.68 rad (lane moved left in the image) = car turned RIGHT as commanded. PASS.
+- Earlier floor straight test (forward 20 % 1.5 s, 19:15): went straight, 10–15 cm, offset +0.045 / heading +1.7° after → no trim.
+- STEER_KP_UFLD back to 10 (the "too weak" diagnosis came from the swapped sides; the car turns fast on the floor:
+  0.4 s at 25/0 ≈ 0.6 offset). Base 20, turn limit 20, slow-down 0.4, Kh 0 stay for the first lap.
+- Camera centred + straight (fixed mount): offset −0.077, heading −0.016 rad (steady) → heading bias ≈ 0.

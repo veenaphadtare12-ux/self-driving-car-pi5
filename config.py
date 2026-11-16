@@ -20,8 +20,11 @@ GPIO_CHIP_CANDIDATES = (0, 4)
 # Pins from ~/car_project/config/motors.yaml (confirmed 2026-10-13, wheels lifted).
 # LEFT/RIGHT = the car's real wheels seen from behind. IN1 = forward pin, IN2 = backward pin
 # (motors.py: positive speed -> IN1 high, IN2 low).
-LEFT_IN1, LEFT_IN2, LEFT_PWM = 23, 24, 13      # real left:  fwd 23, back 24, PWM 13
-RIGHT_IN1, RIGHT_IN2, RIGHT_PWM = 22, 27, 12   # real right: fwd 22, back 27, PWM 12
+LEFT_IN1, LEFT_IN2, LEFT_PWM = 22, 27, 12      # real left:  fwd 22, back 27, PWM 12
+RIGHT_IN1, RIGHT_IN2, RIGHT_PWM = 23, 24, 13   # real right: fwd 23, back 24, PWM 13
+# 2026-11-16 19:30 swapped: with 23/24/13 as LEFT, "left faster" turned the car LEFT on the track (both P1 runs ran away
+# from the lane centre; camera proven not mirrored: hand on the car's left shows on the image left + US front-left 51 mm).
+# The swap probably dates from the left-front motor re-solder (2026-11-15/16). Forward/backward per side unchanged.
 PWM_FREQ_HZ = 1000
 
 # No inversion: IN1/IN2 above are already forward/backward per side (motors.yaml invert_left/right: false).
@@ -160,7 +163,7 @@ UFLD_SINGLE_LINE_CONFIDENCE = 0.8
 # The first P1 run (2026-11-16) used kp 10 / limit 15 at base 30 WITHOUT kh and slow-down: the car drifted right and
 # lost the lane (logs/P1_20261116_180826.csv). Start values below restore kh + slow-down and give more turn for the
 # floor (skid steer); tune on the track with the page sliders (Part 8).
-STEER_KP_UFLD = 20.0
+STEER_KP_UFLD = 10.0          # back to 10 after the motor L/R swap fix: the 'too weak' reading was really the swapped sides
 STEER_KD_UFLD = 2.0
 STEER_KH_UFLD = 0.0           # turn per radian of lane heading (> 0 = lane runs right ahead -> steer right).
                               # car_project used 10. Kept 0 until the heading is checked on the car (DRY RUN, car
