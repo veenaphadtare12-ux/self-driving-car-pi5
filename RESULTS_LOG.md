@@ -546,3 +546,9 @@ Offline replay of the red rule on these two runs (3 consecutive checks, conf ≥
 | (0.0, 1.0) | 0.10 | h 0.10 at x 0.21 / x 0.23 |
 Pi rebooted ~20:48 (UPS 9.94 V right after = 3.31 V/cell, low). No change to config yet — waiting for the user's choice
 (move the light to the right side of the track, or widen SIGNAL_REGION_X and lower RED_LIGHT_HEIGHT_RATIO).
+**Fix applied 20:55 (user OK, option 1):** `SIGNAL_REGION_X` (0.4, 1.0) → (0.0, 1.0), `RED_LIGHT_HEIGHT_RATIO` 0.15 → 0.10.
+test_decision 60 OK (left-light test now checks the region with an explicit (0.4, 1.0) config + new test: left light
+stops with the default), test_control 16 OK, test_runtime 15 OK, test_web 10 OK, test_failsafe 11 OK,
+test_lanes 25 OK + test_profiles 6 OK (car_project venv). Replay of the two P5 runs through the real `decide()`:
+run 1 CAUTION (h 0.08) → STOP_RED at h 0.10; run 2 CAUTION (h 0.07) → STOP_RED at h 0.10. Next: DRY RUN check with the
+light by hand, then P5 run 3 (needs "on track").

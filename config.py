@@ -225,11 +225,14 @@ LANE_LOST_FRAMES = 10
 RED_LIGHT_CLASS = "light_red"
 GREEN_LIGHT_CLASS = "light_green"
 SIGNAL_CONF = 0.5
-SIGNAL_REGION_X = (0.4, 1.0)  # lights stand on the right side: box center x in this range
+# Was (0.4, 1.0) (lights on the right); on the demo track the light is on the LEFT (box x 0.01-0.35, P5 runs
+# 2026-11-16 20:41) -> whole width. Revert to (0.4, 1.0) if the light is moved to the right side.
+SIGNAL_REGION_X = (0.0, 1.0)  # box center x in this range
 SIGNAL_CONFIRM_CHECKS = 3     # consecutive YOLO checks needed to confirm red / green
 # PLACEHOLDER: red box at least this tall = close enough to stop (STOP_RED); smaller = CAUTION.
-# The dataset's red lights are 0.10-0.17 tall. Measure yours at the stop line.
-RED_LIGHT_HEIGHT_RATIO = 0.15
+# The dataset's red lights are 0.10-0.17 tall. Track P5 runs 2026-11-16: 0.15 only at the frame edge (x 0.04-0.07),
+# 0.10 reached at x ~0.22 (same as STOP_SIGN_HEIGHT_RATIO). Was 0.15.
+RED_LIGHT_HEIGHT_RATIO = 0.10
 RED_TIMEOUT_S = 10.0          # STOP_RED ends after this long with neither red nor green seen
 
 # ---------------------------------------------------------------------------

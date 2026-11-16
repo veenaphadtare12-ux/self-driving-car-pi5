@@ -307,9 +307,15 @@ class TestRedLight(unittest.TestCase):
         outs, _ = run(steps)
         self.assertEqual(states(outs), [DRIVE] * 8)
 
-    def test_red_on_left_side_ignored(self):
-        outs, _ = run([I(i * DT, detections=[red(cx=0.2)]) for i in range(5)])
+    def test_red_outside_signal_region_ignored(self):
+        cfg = cfg_with(SIGNAL_REGION_X=(0.4, 1.0))     # right-side-only region
+        outs, _ = run([I(i * DT, detections=[red(cx=0.2)]) for i in range(5)], cfg=cfg)
         self.assertEqual(states(outs), [DRIVE] * 5)
+
+    def test_red_on_left_side_stops_with_default_region(self):
+        # demo track: the light stands on the left (box x 0.01-0.35, P5 runs 2026-11-16)
+        outs, _ = run([I(i * DT, detections=[red(cx=0.2)]) for i in range(N_SIG)])
+        self.assertEqual(states(outs), [DRIVE] * (N_SIG - 1) + [STOP_RED])
 
     def test_low_conf_red_ignored(self):
         outs, _ = run([I(i * DT, detections=[red(conf=config.SIGNAL_CONF - 0.05)]) for i in range(5)])
