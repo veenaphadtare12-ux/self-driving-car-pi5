@@ -448,3 +448,18 @@ right (car near the left tape → would steer right). First stop-line attempt ha
 user). `decide()` uses only the sideways offset, not the lane heading: on curves the car turns only after drifting — watch
 for running wide in Part 8 P1 (fix = higher Kp, or heading = decision-rule change → ask first). US left read 184–191 mm
 (laptop/tape roll beside the track; safety net needs both < 200 mm, so no stop).
+
+## Part 8 P1 first motor run (2026-11-16 18:09–18:10, `ufld_yolo`, base 30, Kp 10, Kd 2) — FAIL (lane lost repeatedly)
+Log `logs/P1_20261116_180826.csv` + `logs/p8_p1/status_180358.jsonl`. The video `videos/P1_20261116_180826.mp4` can't be
+opened (no moov atom): the Pi rebooted at ~18:16 while STOPPED (6 min after the STOP button), so the file was never finished.
+throttled 0x0 throughout, max 66 °C, lane 10 fps, det 10 fps, ctrl 20 Hz (no fail-safe fired).
+- 66 s with motors on (START 312.7 s → STOP button 378.8 s); 8 restarts after automatic stops: 7× STOP_LANE_LOST, 5× STOP_OBSTACLE (ToF 164–194 mm).
+- Every restart but one has the same pattern: starts near the centre (offset −0.01…−0.05), then within 2–4 s the offset goes to −0.4…−0.9
+  (car right of the lane centre) even though the controller is already steering left as hard as Kp allows (L 19–23 / R 36–41),
+  then lane lost → stop, often followed by ToF < 200 mm (car pointing off the track).
+- The one exception (360–366 s): offset +0.2…+0.5, steered right (L 41 / R 19), then lost again.
+- While driving, lines were detected in only 34 % of status samples (none 195, R 50, LR 38, L 12).
+Reading: the car drifts right faster than the left-steer correction can turn it. Likely causes (not yet checked): a skid-steer car
+on the floor needs a much bigger left/right difference to turn than in the air (stage 1 was wheels lifted), and/or a mechanical
+pull to the right at 30 %. Next: short open-loop on-track steps with motor_step.py (straight 30/30, then a turn) to measure this —
+needs "on track". User's observation of the run: pending.
