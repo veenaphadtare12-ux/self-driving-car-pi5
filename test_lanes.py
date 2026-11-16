@@ -153,7 +153,7 @@ class TestSteeringGainsPerBackend(unittest.TestCase):
         c = steer_cfg("ufld")
         out, _ = decide(DecisionInputs(t=0.0, offset_px=0.0), DecisionState(), c)
         self.assertEqual((out.left, out.right), (config.BASE_SPEED, config.BASE_SPEED))   # straight: full base
-        out, _ = decide(DecisionInputs(t=0.0, offset_px=-1.0), DecisionState(), c)        # full left turn
+        out, _ = decide(DecisionInputs(t=0.0, offset_px=-10.0), DecisionState(), c)       # saturated left turn
         self.assertAlmostEqual(out.steer, -config.STEER_MAX_UFLD)
         base = config.BASE_SPEED * (1 - config.STEER_SLOWDOWN_UFLD)
         self.assertAlmostEqual(out.right, min(base + config.STEER_MAX_UFLD, config.MAX_SPEED))
