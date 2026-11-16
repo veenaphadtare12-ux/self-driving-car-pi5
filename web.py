@@ -15,7 +15,7 @@ loop keeps running.
   * phases P1-P7 (changing phase stops the car), lane backend (Hough / UFLD v2_same / v2_plus / v2_same_int8, only stopped),
     RECORD (annotated view -> videos/<phase>_<time>.mp4 at the stream rate + logs/<phase>_<time>.csv)
   * live view: MJPEG ~10 fps, 480x360, overlays drawn in a separate thread, only while someone watches or records
-  * settings sliders (base speed capped at WEB_BASE_SPEED_MAX, Kp/Kd of the active backend, trims): applied live,
+  * settings sliders (base speed capped at WEB_BASE_SPEED_MAX, Kp/Kd/Kh/turn limit of the active backend, trims): applied live,
     "Save" writes web_settings.json (loaded only by --web; config.py is never edited)
   * status: last 10 state changes, indicators (camera, ToF, ultrasonics, IMU), rehearsal tracker (rehearsal_log.csv)
 """
@@ -47,6 +47,8 @@ PARAMS = {  # page name: (config name for hough, config name for ufld, min, max,
     "base_speed": ("BASE_SPEED", "BASE_SPEED", 0, None, 1),
     "kp": ("STEER_KP", "STEER_KP_UFLD", 0, None, None),
     "kd": ("STEER_KD", "STEER_KD_UFLD", 0, None, None),
+    "kh": ("STEER_KH", "STEER_KH_UFLD", 0, None, None),
+    "turn_limit": ("STEER_MAX", "STEER_MAX_UFLD", 0, 50, 1),
     "left_trim": ("LEFT_TRIM", "LEFT_TRIM", 0.5, 1.0, 0.01),
     "right_trim": ("RIGHT_TRIM", "RIGHT_TRIM", 0.5, 1.0, 0.01),
 }
@@ -378,6 +380,7 @@ class WebState:
             "switching": self.switching, "left": r(info.get("left"), 1), "right": r(info.get("right"), 1),
             "offset": r(info.get("lane_offset"), 3), "lines": None if lres is None else lres.lines,
             "confidence": None if lres is None else r(lres.confidence),
+            "heading": None if lres is None else r(lres.heading, 3),
             "lane_fps": r(info.get("lane_fps"), 1), "det_fps": r(info.get("det_fps"), 1),
             "ctrl_hz": r(info.get("ctrl_hz"), 1), "lane_age": r(info.get("lane_age")), "det_age": r(info.get("det_age")),
             "cpu_temp": r(info.get("cpu_temp"), 1),
@@ -442,7 +445,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:3px 4px;t
 <div class="grid">
 <div><span>lane fps</span><b id="lane_fps">-</b></div><div><span>detect fps</span><b id="det_fps">-</b></div><div><span>control Hz</span><b id="ctrl_hz">-</b></div>
 <div><span>lane age s</span><b id="lane_age">-</b></div><div><span>detect age s</span><b id="det_age">-</b></div><div><span>CPU &deg;C</span><b id="cpu_temp">-</b></div>
-<div><span>offset</span><b id="offset">-</b></div><div><span>left / right %</span><b id="lr">-</b></div><div><span>ToF / US mm</span><b id="dist">-</b></div>
+<div><span>offset / heading</span><b id="offset">-</b></div><div><span>left / right %</span><b id="lr">-</b></div><div><span>ToF / US mm</span><b id="dist">-</b></div>
 </div>
 <div class="card"><h2>PHASE (changing phase stops the car)</h2><div class="phases" id="phases"></div><div id="phasedesc"></div></div>
 <div class="card"><h2>RUN</h2>
@@ -459,13 +462,15 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:3px 4px;t
 <label>Base speed % (max <span id="bmax"></span>) <b id="v_base_speed"></b></label><input type="range" id="base_speed" min="0" step="1">
 <label>Kp <b id="v_kp"></b></label><input type="range" id="kp" min="0" step="0.01">
 <label>Kd <b id="v_kd"></b></label><input type="range" id="kd" min="0" step="0.01">
+<label>Kh (heading) <b id="v_kh"></b></label><input type="range" id="kh" min="0" step="0.5">
+<label>Turn limit <b id="v_turn_limit"></b></label><input type="range" id="turn_limit" min="0" max="50" step="1">
 <label>Left trim <b id="v_left_trim"></b></label><input type="range" id="left_trim" min="0.5" max="1" step="0.01">
 <label>Right trim <b id="v_right_trim"></b></label><input type="range" id="right_trim" min="0.5" max="1" step="0.01">
 <div class="row"><button style="background:var(--sel);font-size:16px;padding:10px" onclick="post('/save_params',{})">Save</button></div>
 </div>
 </main><script>
 const $=id=>document.getElementById(id);let token=sessionStorage.getItem("tok");let S={};let dragging={};
-const P=["base_speed","kp","kd","left_trim","right_trim"];
+const P=["base_speed","kp","kd","kh","turn_limit","left_trim","right_trim"];
 async function post(u,b){b=b||{};b.token=token;try{const r=await fetch(u,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)});
 const j=await r.json();if(j.error)$("msg").textContent=j.error;refresh();return j}catch(e){$("msg").textContent="no connection to the car"}}
 function cmd(a){post("/cmd",{action:a})}
@@ -486,7 +491,7 @@ $("rec").textContent=s.recording?"● REC":"";$("record").checked=s.recording;$(
 $("recinfo").textContent=s.recording?("recording "+s.rec_path+" + "+s.rec_csv):"";
 $("reason").textContent=s.reason;
 ["lane_fps","det_fps","ctrl_hz"].forEach(k=>$(k).textContent=f(s[k],1));["lane_age","det_age"].forEach(k=>$(k).textContent=f(s[k],2));
-$("cpu_temp").textContent=f(s.cpu_temp,1);$("offset").textContent=f(s.offset,2);$("lr").textContent=f(s.left,0)+" / "+f(s.right,0);
+$("cpu_temp").textContent=f(s.cpu_temp,1);$("offset").textContent=f(s.offset,2)+" / "+f(s.heading,2);$("lr").textContent=f(s.left,0)+" / "+f(s.right,0);
 $("dist").textContent=f(s.tof,0)+" / "+f(s.us[0],0)+","+f(s.us[1],0);
 $("msg").textContent=s.message||"";phases(s);
 const ls=$("lane");if(!ls.childElementCount)s.lane_choices.forEach(c=>{const o=document.createElement("option");o.value=o.textContent=c;ls.appendChild(o)});
@@ -499,7 +504,7 @@ $("thr").textContent="throttled "+(s.throttled||"-")+(s.undervolt?"  UNDER-VOLTA
 $("hist").innerHTML="<tr><th>time</th><th>state</th><th>reason</th></tr>"+s.history.map(h=>`<tr><td>${h[0]}</td><td>${h[1]}</td><td>${h[2]}</td></tr>`).join("");
 $("rh").innerHTML="<tr><th>phase</th><th>pass</th><th>fail</th><th>in a row</th><th></th></tr>"+Object.keys(s.rehearsal).map(p=>{const r=s.rehearsal[p];
 return `<tr><td>${p}</td><td>${r.pass}</td><td>${r.fail}</td><td><b>${r.streak}</b>/5</td><td class="rh"><button ${s.controller?"":"disabled"} style="background:#1f6f45" onclick="post('/rehearsal',{phase:'${p}',result:'PASS'})">PASS</button> <button ${s.controller?"":"disabled"} style="background:#7a2620" onclick="post('/rehearsal',{phase:'${p}',result:'FAIL'})">FAIL</button></td></tr>`}).join("");
-$("bmax").textContent=s.base_speed_max;$("base_speed").max=s.base_speed_max;$("kp").max=Math.max(1,s.params.kp*3);$("kd").max=Math.max(0.5,s.params.kd*3);
+$("bmax").textContent=s.base_speed_max;$("base_speed").max=s.base_speed_max;$("kp").max=Math.max(1,s.params.kp*3);$("kd").max=Math.max(0.5,s.params.kd*3);$("kh").max=Math.max(30,s.params.kh*3);
 P.forEach(k=>{$(k).disabled=!s.controller;if(!dragging[k]){$(k).value=s.params[k];$("v_"+k).textContent=s.params[k]}});
 }catch(e){$("msg").textContent="no connection to the car"}}
 claim(false);setInterval(refresh,500);refresh();

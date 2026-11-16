@@ -547,6 +547,8 @@ class CarRuntime:
                 _, det = self.det_worker.out.get()
 
             offset, st_in, mode = self.feed.prepare(self.st, lane, now)
+            lres_in = lane.payload[2] if mode == "new" and len(lane.payload) > 2 else None
+            heading = getattr(lres_in, "heading", None) if offset is not None else None
             dets_raw, det_t = (det.payload, det.t_frame) if det is not None else ([], None)
             dets, ignored = filter_phase(dets_raw, self.phase)
 
@@ -558,7 +560,7 @@ class CarRuntime:
                 tof = tof_t = fl = fl_t = fr = fr_t = None
                 alive = "-"
 
-            inp = DecisionInputs(t=now, offset_px=offset, detections=dets, det_t=det_t,
+            inp = DecisionInputs(t=now, offset_px=offset, heading=heading, detections=dets, det_t=det_t,
                                  tof_mm=tof, tof_t=tof_t, us_fl_mm=fl, us_fl_t=fl_t,
                                  us_fr_mm=fr, us_fr_t=fr_t, estop=self.estop)
             out, st_new = decide(inp, st_in) if self.steer_cfg is None else decide(inp, st_in, self.steer_cfg)

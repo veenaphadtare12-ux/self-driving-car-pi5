@@ -78,18 +78,20 @@ CAM_FORMAT = "RGB888"
 # ---------------------------------------------------------------------------
 # Speeds (percent duty, -100..100)
 # ---------------------------------------------------------------------------
-BASE_SPEED = 30
+BASE_SPEED = 20               # was 30: P1 run 2026-11-16 at 30 drifted out of the lane (steering too weak for that speed)
 MAX_SPEED = 50
 MIN_WHEEL_SPEED = 0           # lane following never reverses a wheel; set <0 to allow pivoting
 MOTOR_WATCHDOG_S = 0.5        # motors stop if drive() is not called for this long
 BRAKE_S = 0.3                 # stop(): active brake (IN1=IN2=1, PWM 100) this long, then coast
 
 # ---------------------------------------------------------------------------
-# Steering (PD on lane offset in pixels; derivative in px/s)
+# Steering (PD on lane offset in pixels; derivative in px/s; + heading term and turn slow-down for UFLD)
 # ---------------------------------------------------------------------------
 STEER_KP = 0.2
 STEER_KD = 0.03
 STEER_MAX = MAX_SPEED         # clamp on the steering term
+STEER_KH = 0.0                # heading term (Hough: none, unchanged)
+STEER_SLOWDOWN = 0.0          # base speed cut at full turn (Hough: none, unchanged)
 
 # ---------------------------------------------------------------------------
 # Lane detection (tape)
@@ -154,10 +156,18 @@ UFLD_MIN_ROWS_IN_BAND = 3
 UFLD_MIN_CONFIDENCE = 0.45
 UFLD_SINGLE_LINE_CONFIDENCE = 0.8
 # Steering for UFLD: offset is normalised (-1..+1 = half a lane width), so gains are per unit offset.
-# Start values = car_project lane_follow.yaml (kp 10, kd 2, turn_limit 15); tune on the track (Part 8).
-STEER_KP_UFLD = 10.0
+# car_project lane_follow.yaml used kp 10, kd 2, kh 10, turn_limit 15, slow_down 0.4 at base 15 (never tried on the track).
+# The first P1 run (2026-11-16) used kp 10 / limit 15 at base 30 WITHOUT kh and slow-down: the car drifted right and
+# lost the lane (logs/P1_20261116_180826.csv). Start values below restore kh + slow-down and give more turn for the
+# floor (skid steer); tune on the track with the page sliders (Part 8).
+STEER_KP_UFLD = 20.0
 STEER_KD_UFLD = 2.0
-STEER_MAX_UFLD = 15.0
+STEER_KH_UFLD = 0.0           # turn per radian of lane heading (> 0 = lane runs right ahead -> steer right).
+                              # car_project used 10. Kept 0 until the heading is checked on the car (DRY RUN, car
+                              # straight + centred -> LANE_HEADING_BIAS): recorded sessions show a +0.4..0.5 rad mean
+                              # heading, which at Kh 10 would steer right all the time.
+STEER_MAX_UFLD = 20.0         # turn limit: at base 20 the inner wheel can go down to 0
+STEER_SLOWDOWN_UFLD = 0.4     # base speed x (1 - 0.4 * |turn| / limit): slower in sharp turns, as car_project
 # (Hough uses STEER_KP / STEER_KD / STEER_MAX above, offset in pixels.)
 
 # ---------------------------------------------------------------------------

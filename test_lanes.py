@@ -133,6 +133,37 @@ class TestSteeringGainsPerBackend(unittest.TestCase):
         self.assertAlmostEqual(out.steer, config.STEER_KP_UFLD * 0.5)
         self.assertGreater(out.left, out.right)                      # lane right -> steer right
 
+    def test_ufld_heading_term(self):
+        self.assertEqual(steer_cfg("ufld").STEER_KH, config.STEER_KH_UFLD)
+        saved = config.STEER_KH_UFLD
+        config.STEER_KH_UFLD = 10.0                                  # the page slider sets this live
+        try:
+            c = steer_cfg("ufld")
+        finally:
+            config.STEER_KH_UFLD = saved
+        out, _ = decide(DecisionInputs(t=0.0, offset_px=0.0, heading=0.1), DecisionState(), c)
+        self.assertAlmostEqual(out.steer, 10.0 * 0.1)
+        self.assertGreater(out.left, out.right)                      # lane runs right ahead -> steer right
+        out, _ = decide(DecisionInputs(t=0.0, offset_px=0.0, heading=-0.1), DecisionState(), c)
+        self.assertLess(out.left, out.right)
+        out, _ = decide(DecisionInputs(t=0.0, offset_px=0.2, heading=None), DecisionState(), c)
+        self.assertAlmostEqual(out.steer, config.STEER_KP_UFLD * 0.2)  # unknown heading -> offset only
+
+    def test_ufld_slowdown_in_turns(self):
+        c = steer_cfg("ufld")
+        out, _ = decide(DecisionInputs(t=0.0, offset_px=0.0), DecisionState(), c)
+        self.assertEqual((out.left, out.right), (config.BASE_SPEED, config.BASE_SPEED))   # straight: full base
+        out, _ = decide(DecisionInputs(t=0.0, offset_px=-1.0), DecisionState(), c)        # full left turn
+        self.assertAlmostEqual(out.steer, -config.STEER_MAX_UFLD)
+        base = config.BASE_SPEED * (1 - config.STEER_SLOWDOWN_UFLD)
+        self.assertAlmostEqual(out.right, min(base + config.STEER_MAX_UFLD, config.MAX_SPEED))
+        self.assertAlmostEqual(out.left, max(base - config.STEER_MAX_UFLD, config.MIN_WHEEL_SPEED))
+
+    def test_hough_ignores_heading_and_slowdown(self):
+        out, _ = decide(DecisionInputs(t=0.0, offset_px=30.0, heading=0.5), DecisionState())
+        self.assertAlmostEqual(out.steer, config.STEER_KP * 30.0)
+        self.assertAlmostEqual(out.left, config.BASE_SPEED + config.STEER_KP * 30.0)
+
 
 def tape_image(shift):
     """White floor with two black tape lines converging upwards, shifted right by `shift` px."""

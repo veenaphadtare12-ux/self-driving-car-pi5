@@ -463,3 +463,27 @@ Reading: the car drifts right faster than the left-steer correction can turn it.
 on the floor needs a much bigger left/right difference to turn than in the air (stage 1 was wheels lifted), and/or a mechanical
 pull to the right at 30 %. Next: short open-loop on-track steps with motor_step.py (straight 30/30, then a turn) to measure this —
 needs "on track". User's observation of the run: pending.
+
+## Steering review after the failed P1 run + changes (2026-11-16 18:30–19:00, no motors except the lifted check)
+Lifted check (user watched, 15 % both sides, 2 s twice + 10 s): all 4 wheels same speed, no twitching, no rubbing → the
+right pull only shows up under load on the floor (floor straight test still to do).
+Code review (camera → offset → steering → wheels): no sign / mixing bug (direction checks already PASS). Causes found:
+1. Gains copied from car_project (Kp 10, limit 15) were meant for base 15 (its slider capped at 18); P1 ran them at base 30,
+   so half the turning power relative to speed. car_project never tried them on the track either.
+2. car_project's heading term (Kh) and its slow-down in turns were not ported; `decide()` used the offset only.
+3. The derivative term added only ~1 of ~10 points in the log (negligible).
+Changes (decision rules for stops unchanged; Hough steering unchanged: STEER_KH = STEER_SLOWDOWN = 0):
+| setting | before | now |
+|---|---|---|
+| BASE_SPEED | 30 | 20 |
+| STEER_KP_UFLD | 10 | 20 |
+| STEER_MAX_UFLD (turn limit) | 15 | 20 (inner wheel can reach 0 at base 20) |
+| STEER_SLOWDOWN_UFLD (new) | – | 0.4: base × (1 − 0.4·|turn|/limit), as car_project |
+| STEER_KH_UFLD (new, heading term) | – | 0 for now (slider on the page) |
+At the offsets of the failed run, the left-steer command becomes much stronger: −0.4 → L 8.8 / R 24.8 (was 26 / 34),
+−0.65 → L 1.8 / R 27.8 (was 23.5 / 36.5).
+Kh stays 0 because heading on recorded sessions (s01/s03/s05, 1280×720) averages +0.4…0.5 rad: at Kh 10 that alone
+would steer right all the time. Heading is now shown on the page (offset / heading) and in /status; check it in DRY RUN with
+the car straight + centred (→ LANE_HEADING_BIAS) and angled left/right (sign) before turning Kh up.
+Page: new sliders Kh and Turn limit (live, saved with Save). Tests: test_decision 59, test_lanes 25 (3 new), test_runtime 15,
+test_web 10, test_profiles 6, test_control 16, test_failsafe 11 — all OK. Replay (s03, P1, DRY RUN, 25 s): 20 Hz, no errors.

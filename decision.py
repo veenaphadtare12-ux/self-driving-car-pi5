@@ -30,7 +30,8 @@ Priority (highest first):
   STOP_LANE_LOST  no lane for LANE_LOST_FRAMES frames
   CAUTION         corridor obstacle at STOP..CAUTION_DISTANCE_MM or box height >= CAUTION_BOX_HEIGHT_RATIO,
                   or a confirmed red light that is still small (far): lane following at CAUTION_FACTOR speed
-  DRIVE           PD steering on the lane offset (short dropouts keep the last steering)
+  DRIVE           PD steering on the lane offset + STEER_KH x lane heading, base speed cut by up to
+                  STEER_SLOWDOWN at full turn (short dropouts keep the last steering)
 
 CAUTION is checked after STOP_LANE_LOST on purpose: it is a slow-down, and a car that has lost
 the lane should stop, not keep driving at half speed.
@@ -56,6 +57,7 @@ STOP_STATES = (ESTOP, STOP_OBSTACLE, STOP_RED, STOP_SIGN, STOP_LANE_LOST)
 class DecisionInputs:
     t: float                                   # seconds, monotonic
     offset_px: Optional[float]                 # lane center - image center; None = no lane
+    heading: Optional[float] = None            # lane heading, radians (> 0 = lane runs right ahead); None = unknown
     detections: List[dict] = field(default_factory=list)
     det_t: Optional[float] = None              # capture time of the frame YOLO ran on
     tof_mm: Optional[float] = None             # inf = no target in range; None = no valid reading
@@ -181,17 +183,26 @@ def resume_distance_ok(tof, fl, fr, cfg=config):
     return True, "no distance sensor"
 
 
-def steering(offset, prev_offset, dt, cfg=config):
-    """PD term on offset (px). Derivative in px/s; ignored if dt is invalid or too long."""
+def steering(offset, prev_offset, dt, cfg=config, heading=None):
+    """PD term on offset (px), plus STEER_KH x heading (rad) when known.
+    Derivative in px/s; ignored if dt is invalid or too long."""
     d = 0.0
     if prev_offset is not None and dt is not None and 0 < dt <= 0.5:
         d = (offset - prev_offset) / dt
-    return _clamp(cfg.STEER_KP * offset + cfg.STEER_KD * d, -cfg.STEER_MAX, cfg.STEER_MAX)
+    s = cfg.STEER_KP * offset + cfg.STEER_KD * d
+    kh = getattr(cfg, "STEER_KH", 0.0)
+    if kh and heading is not None:
+        s += kh * heading
+    return _clamp(s, -cfg.STEER_MAX, cfg.STEER_MAX)
 
 
 def wheel_speeds(steer, cfg=config):
-    left = _clamp(cfg.BASE_SPEED + steer, cfg.MIN_WHEEL_SPEED, cfg.MAX_SPEED)
-    right = _clamp(cfg.BASE_SPEED - steer, cfg.MIN_WHEEL_SPEED, cfg.MAX_SPEED)
+    base = cfg.BASE_SPEED
+    slow = getattr(cfg, "STEER_SLOWDOWN", 0.0)
+    if slow and cfg.STEER_MAX > 0:
+        base = base * (1.0 - slow * min(abs(steer) / cfg.STEER_MAX, 1.0))
+    left = _clamp(base + steer, cfg.MIN_WHEEL_SPEED, cfg.MAX_SPEED)
+    right = _clamp(base - steer, cfg.MIN_WHEEL_SPEED, cfg.MAX_SPEED)
     return left, right
 
 
@@ -325,7 +336,7 @@ def decide(inp: DecisionInputs, st: DecisionState, cfg=config):
 
     if lane_seen:
         dt = None if st.prev_t is None else t - st.prev_t
-        steer = steering(inp.offset_px, st.prev_offset, dt, cfg)
+        steer = steering(inp.offset_px, st.prev_offset, dt, cfg, heading=inp.heading)
         reason, new_prev, new_t = "lane", inp.offset_px, t
     else:
         steer = st.last_steer   # short dropout: keep the last command

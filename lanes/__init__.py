@@ -7,7 +7,8 @@
 
 Steering units given to decision.py (unchanged rules, per-backend gains in config):
   hough: offset in pixels (STEER_KP / STEER_KD, as calibrated before)
-  ufld:  normalised offset -1..+1 (STEER_KP_UFLD / STEER_KD_UFLD / STEER_MAX_UFLD)
+  ufld:  normalised offset -1..+1 (STEER_KP_UFLD / STEER_KD_UFLD / STEER_MAX_UFLD) + heading
+         (STEER_KH_UFLD) and turn slow-down (STEER_SLOWDOWN_UFLD)
 """
 from .result import LaneEstimator, LaneResult  # noqa: F401
 
@@ -33,7 +34,8 @@ def steer_cfg(backend):
     if backend != "ufld":
         return None
     return _Override(config, STEER_KP=config.STEER_KP_UFLD, STEER_KD=config.STEER_KD_UFLD,
-                     STEER_MAX=config.STEER_MAX_UFLD)
+                     STEER_MAX=config.STEER_MAX_UFLD, STEER_KH=config.STEER_KH_UFLD,
+                     STEER_SLOWDOWN=config.STEER_SLOWDOWN_UFLD)
 
 
 class _Override:
