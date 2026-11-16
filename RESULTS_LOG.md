@@ -393,3 +393,15 @@ IMU 0x70 PASS · model checksums PASS (incl. INT8) · models load PASS (v2_same,
 FPS ufld_solo PASS (lane 4.0, 20 Hz, lane age max 0.566 s) · FPS ufld_yolo PASS (lane 10.5, det 10.0, 20 Hz, age max 0.217 s) ·
 CPU 60.6 °C PASS · throttled 0x0 PASS · disk 84.8 GB PASS · network http://192.168.0.130:8001/ PASS · fans PASS.
 YOLO NCNN-vs-.pt parity: still pending (~/best.pt not on the Pi).
+
+## ufld_solo switched to INT8 (2026-11-16 14:30) — approved
+- config: `UFLD_SOLO_MODEL = "v2_same_int8"` (FP32 fallback: set it to "v2_same"; FP32 file kept, checksum + load still
+  checked by preflight). Reason: FP32 solo soak lane age max 0.75–0.78 s > LANE_MAX_AGE_S 0.5; INT8 acc 0.9405 vs 0.9373.
+- preflight FPS check now also needs lane age max < LANE_MAX_AGE_S (0.5 s) per profile.
+- **5 min live soak, ufld_solo INT8** (DRY RUN, sensors on, page + stream open, RECORD, P7; logs/soak_ufld_solo_int8_live):
+| ctrl Hz mean/min | period max | overruns | lane fps mean (min) | lane age at tick mean / p99 / max | temp per min (max) | RSS start → end | throttled (30 samples) | 5 V min | exceptions / stops |
+|---|---|---|---|---|---|---|---|---|---|
+| 20.15 / 20.0 | 57.5 ms | 0 | **13.94** (13.3) | 0.124 / 0.171 / **0.224** | 65.5–67.8 (68.8) | 234 → 236 MB (+0.4 %) | 0x0 | 5.07 V | 0 / 0 |
+  CSV ticks 6005/6006, video 2982/3003 frames. Lane age max 0.224 s (< 0.5 s; FP32 was 0.783 s) → PASS.
+  (The FP32 run's results stay in logs/soak_ufld_solo_live.)
+Tests: profiles 6, decision 59, control 16, lanes 22, runtime 15, failsafe 11, web 10 — all OK.

@@ -23,7 +23,9 @@ def sha256(path):
 
 class TestProfiles(unittest.TestCase):
     def test_profiles_defined(self):
-        self.assertEqual(config.RUNTIME_PROFILES["ufld_solo"]["ufld_model"], "v2_same")       # FP32 alone
+        self.assertEqual(config.RUNTIME_PROFILES["ufld_solo"]["ufld_model"], config.UFLD_SOLO_MODEL)
+        self.assertEqual(config.UFLD_SOLO_MODEL, "v2_same_int8")                                # INT8 alone too
+        self.assertTrue(os.path.exists(config.UFLD_MODELS["v2_same"]))                         # FP32 fallback kept
         self.assertFalse(config.RUNTIME_PROFILES["ufld_solo"]["yolo"])
         self.assertEqual(config.RUNTIME_PROFILES["ufld_yolo"]["ufld_model"], "v2_same_int8")  # INT8 with YOLO
         self.assertTrue(config.RUNTIME_PROFILES["ufld_yolo"]["yolo"])
@@ -36,7 +38,7 @@ class TestProfiles(unittest.TestCase):
         self.assertEqual((a.lane, a.ufld_model, a.ufld_threads, a.yolo_threads, a.yolo_every, a.no_yolo),
                          ("ufld", "v2_same_int8", 3, 1, 3, False))
         a = main_demo.parse_args(["--web", "--profile", "ufld_solo"])
-        self.assertEqual((a.lane, a.ufld_model, a.ufld_threads, a.no_yolo), ("ufld", "v2_same", 4, True))
+        self.assertEqual((a.lane, a.ufld_model, a.ufld_threads, a.no_yolo), ("ufld", "v2_same_int8", 4, True))
 
     def test_explicit_flags_win(self):
         a = main_demo.parse_args(["--web", "--profile", "ufld_yolo", "--ufld-threads", "2", "--ufld-model", "v2_same"])

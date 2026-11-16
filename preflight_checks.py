@@ -145,12 +145,14 @@ def _fps_profile(prof, seconds):
             r = json.load(f)[0]
         yolo = p.get("yolo", True)
         lane_min = config.FAILSAFE_UFLD_MIN_FPS + config.PREFLIGHT_LANE_MARGIN_FPS
-        ok = r["lane_fps"] >= lane_min and r["overruns"] == 0 and not r["errors"] and \
+        age_ok = r["lane_age"]["max"] is not None and r["lane_age"]["max"] < config.LANE_MAX_AGE_S
+        ok = r["lane_fps"] >= lane_min and age_ok and r["overruns"] == 0 and not r["errors"] and \
             (not yolo or r["det_fps"] >= config.PREFLIGHT_MIN_DET_FPS)
         det = (f"det {r['det_fps']} (need >= {config.PREFLIGHT_MIN_DET_FPS:g}), " if yolo else "no YOLO, ")
         report(name, "PASS" if ok else "FAIL",
                f"{seconds}s {p['ufld_model']} {p['ufld_threads']}t: lane {r['lane_fps']} (need >= {lane_min:g}), {det}"
-               f"control {r['ctrl_hz']} Hz, lane age max {r['lane_age']['max']} s, {r['temp_max']} C")
+               f"control {r['ctrl_hz']} Hz, lane age max {r['lane_age']['max']} s (need < {config.LANE_MAX_AGE_S:g}), "
+               f"{r['temp_max']} C")
     except Exception as e:                                       # noqa: BLE001
         report(name, "FAIL", f"{type(e).__name__}: {e}")
 

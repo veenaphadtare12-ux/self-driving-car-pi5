@@ -245,11 +245,13 @@ RT_YOLO_EVERY_N = 6           # threaded runtime: YOLO on every Nth camera frame
 REPLAY_FPS = 30               # --source: frames per second delivered like a camera
 # Runtime profiles: main_demo.py --profile NAME sets lane backend, UFLD model, threads and YOLO on/off
 # (explicit --lane/--ufld-model/--ufld-threads/--yolo-threads/--yolo-every/--no-yolo still win).
-#   ufld_solo  UFLD FP32 alone (no YOLO): ~4.7 fps alone is enough, keep the full-precision model
-#   ufld_yolo  UFLD static INT8 + YOLO (approved 2026-11-16): Part 3 live 30 s: lane 10.3 fps, det 10 fps,
-#              lane age max 0.27 s, 20 Hz, 66 C (FP32 + YOLO only reached lane 3.3 fps)
+#   ufld_solo  UFLD alone (no YOLO). INT8 since 2026-11-16: the FP32 soak gave lane 3.9-4.0 fps, lane age max
+#              0.75-0.78 s (> LANE_MAX_AGE_S 0.5); INT8 is faster and more accurate (0.9405 vs 0.9373, 578 frames)
+#   ufld_yolo  UFLD static INT8 + YOLO (approved 2026-11-16): soak live 10 min: lane 10.6 fps, det 10 fps,
+#              lane age max 0.35 s, 20 Hz, 68 C (FP32 + YOLO only reached lane 3.3 fps)
+UFLD_SOLO_MODEL = "v2_same_int8"   # FP32 fallback: "v2_same" (file kept in models/ufld/, checksum still checked)
 RUNTIME_PROFILES = {
-    "ufld_solo": {"lane": "ufld", "ufld_model": "v2_same", "yolo": False, "ufld_threads": 4},
+    "ufld_solo": {"lane": "ufld", "ufld_model": UFLD_SOLO_MODEL, "yolo": False, "ufld_threads": 4},
     "ufld_yolo": {"lane": "ufld", "ufld_model": "v2_same_int8", "yolo": True, "ufld_threads": 3,
                   "yolo_threads": 1, "yolo_every": 3},
 }
