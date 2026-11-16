@@ -531,3 +531,18 @@ No fail-safe, no safety-net stop, throttled 0x0. Curves still run wide (offset �
 Note: the ToF often reads ~450–500 mm on an empty track (and 1000–2000 mm at other spots) — harmless because
 STOP_OBSTACLE also needs a YOLO box in the corridor, but it means CAUTION/STOP come from the box as soon as it appears.
 UPS battery 9.76 V after the run (≈ 3.25 V/cell) — charge before the next phases.
+
+## Part 8 P5 runs 1–2 (20:41:29–20:41:46 and 20:42:04–20:42:15, phase P5, motors) — FAIL: car drove past the red light
+Same settings as P1 run 4 (base 20, Kp 10, Kh 0). Log `logs/p8_p1d/status_201334.jsonl` + `logs/P1_20261116_201716.csv`.
+YOLO saw `light_red` in both runs (conf 0.5–0.84, box height 0.06 → 0.16), but the state stayed DRIVE.
+**Cause:** the light was on the LEFT of the image (box centre x 0.35 → 0.01; all 6874 red and 72 green boxes in P5
+had x ≤ 0.35), while `SIGNAL_REGION_X = (0.4, 1.0)` only accepts lights on the right → every red box filtered out.
+Offline replay of the red rule on these two runs (3 consecutive checks, conf ≥ 0.5):
+| SIGNAL_REGION_X | RED_LIGHT_HEIGHT_RATIO | first STOP_RED (run 1 / run 2) |
+|---|---|---|
+| (0.4, 1.0) now | 0.15 / 0.12 / 0.10 | never / never |
+| (0.0, 1.0) | 0.15 (now) | h 0.15 at x 0.07 / x 0.04 — light already at the frame edge |
+| (0.0, 1.0) | 0.12 | h 0.12 at x 0.18 / x 0.16 |
+| (0.0, 1.0) | 0.10 | h 0.10 at x 0.21 / x 0.23 |
+Pi rebooted ~20:48 (UPS 9.94 V right after = 3.31 V/cell, low). No change to config yet — waiting for the user's choice
+(move the light to the right side of the track, or widen SIGNAL_REGION_X and lower RED_LIGHT_HEIGHT_RATIO).
