@@ -435,3 +435,16 @@ Camera image not mirrored (frames: the tape the car is near appears on the same 
 the zebra crossing (no false line on the stripes). Note: centre reads −0.07..−0.12 in both profiles (hand placement or
 camera slightly off-centre) — watch for drift on a straight in Part 8 before touching LANE_HEADING_BIAS / centre.
 First "left" attempt was actually at the right tape (viewpoint), clarified with the camera frame.
+
+## Live INT8 lane-dot check on the track (2026-11-16 15:17–15:45, DRY RUN locked, `ufld_yolo`, car placed by hand)
+| spot | lane dots | offset / lines | result |
+|---|---|---|---|
+| straight | on both tapes | ~0 | PASS |
+| zebra crossing | stay on the tapes, none on the stripes | ~0 | PASS |
+| curve (bends right) | follow near right tape + far left tape | −0.02 | PASS |
+| red stop line ~25 cm ahead (logs/lanecheck_stopline.jpg) | on the left (black) tape only, **none on the red stop line** | +0.26, L only, conf 0.80 (3 frames +0.255..+0.268) | PASS |
+Notes: at the stop line the right tape was out of frame (car angled toward the left tape), so single-line offset; sign is
+right (car near the left tape → would steer right). First stop-line attempt had the camera pointing off the track (fixed by
+user). `decide()` uses only the sideways offset, not the lane heading: on curves the car turns only after drifting — watch
+for running wide in Part 8 P1 (fix = higher Kp, or heading = decision-rule change → ask first). US left read 184–191 mm
+(laptop/tape roll beside the track; safety net needs both < 200 mm, so no stop).
