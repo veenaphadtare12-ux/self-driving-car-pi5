@@ -503,3 +503,11 @@ and the offset grew +0.10 → +0.42 → +1.00 in 2.5 s, lane lost; same pattern 
 - STEER_KP_UFLD back to 10 (the "too weak" diagnosis came from the swapped sides; the car turns fast on the floor:
   0.4 s at 25/0 ≈ 0.6 offset). Base 20, turn limit 20, slow-down 0.4, Kh 0 stay for the first lap.
 - Camera centred + straight (fixed mount): offset −0.077, heading −0.016 rad (steady) → heading bias ≈ 0.
+
+## Part 8 P1 run 3 (19:34:40–19:35:54, after the motor L/R fix) — PASS: full lap inside both tapes (user)
+`ufld_yolo`, base 20, Kp 10, Kd 2, turn limit 20, slow-down 0.4, Kh 0. Log `logs/p8_p1c/status_193348.jsonl`,
+video `videos/P1_20261116_193425.mp4`. User: "completed whole lap perfectly without going out of both tapes".
+74 s motor time; lane 9.7+ fps, ctrl 20 Hz, max 67.2 °C, throttled 0x0, no fail-safe. Lines: LR 40 %, R only 48 %, none 12 %.
+Wheels used the full range (L 0–20.6, R 0–26.2). One STOP_LANE_LOST at 19:35:24, DRIVE again 19:35:30 (cause to confirm).
+Offset mean −0.34 (car rides right of the lane centre; |offset| p95 0.81) → next: try Kh ≈ 5 (heading bias ≈ 0) and
+repeat laps both directions for the rehearsal streak.
