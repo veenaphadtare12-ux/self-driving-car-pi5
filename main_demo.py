@@ -72,7 +72,22 @@ def parse_args(argv=None):
     t.add_argument("--yolo-every", type=int, default=None)
     t.add_argument("--phase", default=None, help="P1..P7 (default P7 = all rules)")
     t.add_argument("--duration", type=float, default=0.0, help="stop after N seconds (0 = forever)")
-    return p.parse_args(argv)
+    t.add_argument("--profile", choices=sorted(config.RUNTIME_PROFILES), default=None,
+                   help="lane model + threads + YOLO on/off from config.RUNTIME_PROFILES; explicit flags win")
+    return apply_profile(p.parse_args(argv))
+
+
+def apply_profile(args):
+    """Fill in the settings of --profile that were not given explicitly on the command line."""
+    if not args.profile:
+        return args
+    prof = config.RUNTIME_PROFILES[args.profile]
+    for key in ("lane", "ufld_model", "ufld_threads", "yolo_threads", "yolo_every"):
+        if getattr(args, key) is None and key in prof:
+            setattr(args, key, prof[key])
+    if not prof.get("yolo", True):
+        args.no_yolo = True
+    return args
 
 
 def fmt(v, spec=".0f"):

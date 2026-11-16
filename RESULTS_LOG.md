@@ -336,3 +336,32 @@ real UFLD FP32 + YOLO, chosen setting):
 | second browser | claim 409, STOP 403, car keeps running; E-STOP 200 → ESTOP + DRY RUN |
 | heartbeat (controller stops sending while driving) | STOP, "page heartbeat lost 1.6s" (1.5 s + tick after the last heartbeat) |
 Frames: logs/web_e2e_replay/P1.jpg, P2.jpg, P7.jpg (overlays checked by eye: lane dots, boxes, regions, HUD).
+
+## Reboot during the first soak test (investigated 2026-11-16 13:20) — cause: power cut
+The 03:52 live soak (P7, sensors on, recording) stopped at 456 s (03:58); the Pi was next up at 12:55.
+- Last CSV rows (logs/P7_20261116_035246.csv): 20 Hz, lane 3.33 fps, det 5.0, CPU 67.2 °C, `throttled` 0x0,
+  no EXCEPTION/fail-safe row; file ends on a complete row. RSS flat ~645 MB of 4 GB. → not heat, not memory, not a software crash.
+- After the reboot the RTC set the clock to **1970-01-01 00:00:15** (no RTC battery, BATT_V 0.003 V): the board had **no power at all**.
+- systemd runs the hardware watchdog (1 min): a kernel hang would have rebooted by ~03:59, not 9 h later.
+- `chosen/power/power_reset` = 0 (cold power-on); no previous-boot journal (journal is volatile, `journalctl -b -1` empty).
+- Supply now: EXT5V 5.21–5.24 V, `throttled=0x0`; `max_current` = 0x384 (900 mA) and no USB-PD data → the Pi did not
+  negotiate a 5 A USB-PD supply (powered from a non-PD source / 5V pins).
+**Most likely:** the car's power source cut out (battery empty / BMS cut-off or connector), abrupt enough that no
+under-voltage flag was recorded first. Fix: run long tests on the wall supply (27 W USB-C PD) or a full battery; check the
+battery connector. Optional (not changed, needs OK): persistent journal (`/var/log/journal`) to keep logs across a cut.
+Soak tests now log `get_throttled` every 10 s.
+
+## INT8 UFLD applied for the ufld_yolo profile (2026-11-16) — approved
+- models/ufld/ufld_v2_same_mytrack_int8.onnx = static INT8 candidate, SHA-256 d50f3deae53ea9f944b491d57851ce7d8beff8dc82bf74598fbe7b0fb1153e4a
+  (in SHA256SUMS; preflight checks it). config: UFLD_MODELS["v2_same_int8"], RUNTIME_PROFILES, DEMO_PROFILE = ufld_yolo.
+- `main_demo.py --profile {ufld_solo,ufld_yolo}` (explicit flags win); page lane selector + "UFLD v2_same_int8";
+  `bench_runtime.py --profile` (+ `--ncnn 0` = no YOLO); preflight FPS test runs both profiles; preflight.sh starts DEMO_PROFILE.
+  ufld_solo = FP32 v2_same, 4 threads, no YOLO; ufld_yolo = INT8, UFLD 3 threads, NCNN 1 thread, YOLO every 3rd frame.
+- Accuracy of the installed file: test_parity_ufld --model v2_same_int8: **0.9405** all 578 (0.9496 subset), PASS.
+- Replay benchmark (s04 video, 30 s, no sensors):
+| profile | lane fps | det fps | ctrl Hz | overruns | lane age mean/max | det age max | temp | targets |
+|---|---|---|---|---|---|---|---|---|
+| ufld_solo (FP32, no YOLO) | 4.50 | – | 20.00 | 0 | 0.349 / **0.549** | – | 69.4 | lane age > 0.4 s |
+| ufld_yolo (INT8 + YOLO) | **11.10** | 10.00 | 20.00 | 0 | 0.151 / 0.244 | 0.183 | 68.3 | MEETS ALL |
+Note: ufld_solo is fast enough by FPS (≥ 4) but its lane age max misses the 0.4 s target (FP32 ~200 ms per frame).
+Tests: profiles 6, decision 59, control 16, lanes 22, runtime 15, failsafe 11, web 10, stream_camera 2 — all OK.

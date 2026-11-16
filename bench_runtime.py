@@ -5,6 +5,8 @@
   python bench_runtime.py                                           # live camera
   python bench_runtime.py --ufld 3 --ncnn 1 --every 3 --duration 20 # one setting
   python bench_runtime.py --spin 0 1                                # onnxruntime spinning off / on
+  python bench_runtime.py --profile ufld_yolo --duration 30         # a config.RUNTIME_PROFILES setting
+  (--ncnn 0 = no YOLO; detection targets are then not checked)
 
 Per setting: warm-up, then `duration` s measured. Reports lane / detection FPS (results per second over
 the window), control rate + period jitter + overruns, lane and detection age at the control tick
@@ -25,15 +27,20 @@ from runtime import CarRuntime, SysMonitor
 TARGETS = {"lane_fps": 4.0, "det_fps": 5.0, "max_age": 0.4, "temp": 80.0}
 
 
+def _n(v, spec="5.3f"):
+    return "  -  " if v is None else format(v, spec)
+
+
 def meets(r):
     fails = []
+    yolo = r.get("ncnn_threads", 1) != 0
     if r["lane_fps"] < TARGETS["lane_fps"]:
         fails.append("lane_fps")
-    if r["det_fps"] < TARGETS["det_fps"]:
+    if yolo and r["det_fps"] < TARGETS["det_fps"]:
         fails.append("det_fps")
     if r["lane_age"]["max"] is None or r["lane_age"]["max"] >= TARGETS["max_age"]:
         fails.append("lane_age")
-    if r["det_age"]["max"] is None or r["det_age"]["max"] >= TARGETS["max_age"]:
+    if yolo and (r["det_age"]["max"] is None or r["det_age"]["max"] >= TARGETS["max_age"]):
         fails.append("det_age")
     if r["temp_max"] is not None and r["temp_max"] >= TARGETS["temp"]:
         fails.append("temp")
@@ -57,7 +64,14 @@ def main():
     ap.add_argument("--model", default=config.UFLD_MODEL)
     ap.add_argument("--model-path", default=None, help="benchmark this ONNX file (e.g. an INT8 candidate)")
     ap.add_argument("--json", default=None)
+    ap.add_argument("--profile", choices=sorted(config.RUNTIME_PROFILES), default=None,
+                    help="use this profile's model / threads / YOLO setting (overrides --model --ufld --ncnn --every)")
     a = ap.parse_args()
+    if a.profile:
+        prof = config.RUNTIME_PROFILES[a.profile]
+        a.model, a.ufld = prof["ufld_model"], [prof["ufld_threads"]]
+        a.ncnn = [prof.get("yolo_threads") or 1] if prof.get("yolo", True) else [0]
+        a.every = [prof.get("yolo_every") or config.RT_YOLO_EVERY_N]
 
     if a.model_path:
         config.UFLD_MODELS["candidate"] = os.path.abspath(a.model_path)
@@ -88,7 +102,7 @@ def main():
             config.UFLD_ALLOW_SPINNING = bool(spin)
             lane = UfldLane(model=a.model, threads=ut)
             if nt not in dets:
-                dets[nt] = make_detector(nt)
+                dets[nt] = make_detector(nt) if nt else None
             mon.temp_max = mon.temp_c
             mon.throttled_seen = 0
             rt = CarRuntime(cam, lane, dets[nt], sensors, lane_backend="ufld", yolo_every_n=every,
@@ -96,15 +110,16 @@ def main():
             rt.start_threads()
             rt.run(duration=a.warmup)
             rt.reset_stats()
-            n_l0, n_d0, t0 = rt.lane_worker.n, rt.det_worker.n, time.monotonic()
+            det_n = (lambda: rt.det_worker.n) if rt.det_worker is not None else (lambda: 0)
+            n_l0, n_d0, t0 = rt.lane_worker.n, det_n(), time.monotonic()
             mon.temp_max = mon.temp_c
             mon.throttled_seen = mon.throttled or 0
             rt.run(duration=a.duration)
             dt = time.monotonic() - t0
             s = rt.bench_summary()
             s.update(mode=mode, ufld_threads=ut, ncnn_threads=nt, every=every, spin=spin,
-                     lane_fps=round((rt.lane_worker.n - n_l0) / dt, 2), det_fps=round((rt.det_worker.n - n_d0) / dt, 2))
-            lp, dp = (s["lane_proc_ms"]["mean"] or 0) / 1000, (s["det_proc_ms"]["mean"] or 0) / 1000
+                     lane_fps=round((rt.lane_worker.n - n_l0) / dt, 2), det_fps=round((det_n() - n_d0) / dt, 2), profile=a.profile, model=a.model)
+            lp, dp = (s["lane_proc_ms"]["mean"] or 0) / 1000, ((s["det_proc_ms"] or {}).get("mean") or 0) / 1000
             s["busy"] = round(s["lane_fps"] * lp + s["det_fps"] * dp, 2)
             s["loop_steady"] = (s["ctrl_hz"] is not None and abs(s["ctrl_hz"] - config.CONTROL_HZ) < 0.2
                                 and s["period_ms"]["max"] < 2000.0 / config.CONTROL_HZ and s["overruns"] == 0)
@@ -113,7 +128,7 @@ def main():
             rows.append(s)
             print(f"{ut:>4} {nt:>4} {every:>2} {spin:>4} | {s['lane_fps']:5.2f} {s['det_fps']:5.2f} {s['ctrl_hz']:5.2f} "
                   f"{s['period_ms']['max']:6.1f} {s['overruns']:>3} | {s['lane_age']['mean']:5.3f} {s['lane_age']['max']:5.3f} "
-                  f"{s['det_age']['mean']:5.3f} {s['det_age']['max']:5.3f} | {s['busy']:4.2f} {s['temp_max']:5.1f} "
+                  f"{_n(s['det_age']['mean'])} {_n(s['det_age']['max'])} | {s['busy']:4.2f} {s['temp_max']:5.1f} "
                   f"{s['throttled_seen']:>4} | {','.join(s['fails']) or 'MEETS ALL'}", flush=True)
             if s["errors"]:
                 print("   errors:", s["errors"])

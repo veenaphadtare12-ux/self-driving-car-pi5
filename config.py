@@ -132,6 +132,8 @@ LANE_HEADING_BIAS = 0.0       # radians subtracted from the heading (camera/moun
 UFLD_MODELS = {
     "v2_same": os.path.join(_HERE, "models", "ufld", "ufld_v2_same_mytrack.onnx"),
     "v2_plus": os.path.join(_HERE, "models", "ufld", "ufld_v2_plus_mytrack.onnx"),
+    # static INT8 QDQ of v2_same (Part 3 addendum): acc 0.9405 on all 578 s04 frames (FP32 0.9373), 53 ms vs ~200 ms
+    "v2_same_int8": os.path.join(_HERE, "models", "ufld", "ufld_v2_same_mytrack_int8.onnx"),
 }
 UFLD_MODEL = "v2_same"
 UFLD_ROW_ANCHORS = os.path.join(_HERE, "models", "ufld", "row_anchors.txt")   # 56 anchors, data-v2 package
@@ -241,6 +243,17 @@ YOLO_THREADS = 1              # NCNN CPU threads in the threaded runtime (None =
 RT_YOLO_EVERY_N = 6           # threaded runtime: YOLO on every Nth camera frame (30 fps camera -> 5 fps)
                               # (YOLO_EVERY_N above stays the frame-loop value for the old main_demo)
 REPLAY_FPS = 30               # --source: frames per second delivered like a camera
+# Runtime profiles: main_demo.py --profile NAME sets lane backend, UFLD model, threads and YOLO on/off
+# (explicit --lane/--ufld-model/--ufld-threads/--yolo-threads/--yolo-every/--no-yolo still win).
+#   ufld_solo  UFLD FP32 alone (no YOLO): ~4.7 fps alone is enough, keep the full-precision model
+#   ufld_yolo  UFLD static INT8 + YOLO (approved 2026-11-16): Part 3 live 30 s: lane 10.3 fps, det 10 fps,
+#              lane age max 0.27 s, 20 Hz, 66 C (FP32 + YOLO only reached lane 3.3 fps)
+RUNTIME_PROFILES = {
+    "ufld_solo": {"lane": "ufld", "ufld_model": "v2_same", "yolo": False, "ufld_threads": 4},
+    "ufld_yolo": {"lane": "ufld", "ufld_model": "v2_same_int8", "yolo": True, "ufld_threads": 3,
+                  "yolo_threads": 1, "yolo_every": 3},
+}
+DEMO_PROFILE = "ufld_yolo"    # preflight.sh starts the demo page with this profile
 # Fail-safes (failsafe.py, Part 4). They only stop or slow the car; a stop latches until START.
 FAILSAFE_STALE_S = 1.0        # lane / detection / camera thread published nothing for this long -> STOP
 FAILSAFE_UFLD_MIN_FPS = 2.5   # UFLD lane FPS below this ...

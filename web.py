@@ -12,7 +12,7 @@ loop keeps running.
   * one controlling browser; others are view-only. Control can be taken while the car is stopped, or when
     the controller's heartbeat has been missing for CONTROL_TAKEOVER_S. While a page controls, a missing
     heartbeat for FAILSAFE_HEARTBEAT_S (1.5 s) while driving stops the car (failsafe.py)
-  * phases P1-P7 (changing phase stops the car), lane backend (Hough / UFLD v2_same / v2_plus, only stopped),
+  * phases P1-P7 (changing phase stops the car), lane backend (Hough / UFLD v2_same / v2_plus / v2_same_int8, only stopped),
     RECORD (annotated view -> videos/<phase>_<time>.mp4 at the stream rate + logs/<phase>_<time>.csv)
   * live view: MJPEG ~10 fps, 480x360, overlays drawn in a separate thread, only while someone watches or records
   * settings sliders (base speed capped at WEB_BASE_SPEED_MAX, Kp/Kd of the active backend, trims): applied live,
@@ -41,7 +41,8 @@ VIDEO_DIR = os.path.join(HERE, "videos")
 STREAM_FPS = 10
 STREAM_SIZE = (480, 360)
 CONTROL_TAKEOVER_S = 5.0
-LANE_CHOICES = {"hough": ("hough", None), "ufld:v2_same": ("ufld", "v2_same"), "ufld:v2_plus": ("ufld", "v2_plus")}
+LANE_CHOICES = {"hough": ("hough", None), "ufld:v2_same": ("ufld", "v2_same"), "ufld:v2_plus": ("ufld", "v2_plus"),
+                "ufld:v2_same_int8": ("ufld", "v2_same_int8")}
 PARAMS = {  # page name: (config name for hough, config name for ufld, min, max, step)
     "base_speed": ("BASE_SPEED", "BASE_SPEED", 0, None, 1),
     "kp": ("STEER_KP", "STEER_KP_UFLD", 0, None, None),
