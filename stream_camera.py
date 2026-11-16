@@ -63,7 +63,7 @@ class Handler(BaseHTTPRequestHandler):
                 if jpg:
                     self.wfile.write(b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + jpg + b"\r\n")
                 time.sleep(1 / 20)
-        except (BrokenPipeError, ConnectionResetError):
+        except OSError:  # viewer left or network dropped; keep the server running
             pass
 
     def log_message(self, *a):
