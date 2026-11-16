@@ -514,7 +514,7 @@ repeat laps both directions for the rehearsal streak.
 
 ## P1 run 4 (20:17:38–20:18:49, after the 20:08 reboot) — lap done (user), Kh stayed 0
 `ufld_yolo`, base 20, Kp 10, Kd 2, turn limit 20, slow-down 0.4, **Kh 0** (slider not changed). Log
-`logs/p8_p1d/status_201246.jsonl` + `logs/P1_20261116_201716.csv`. Straights centred (offset ≈ 0); curves under-steer:
+`logs/p8_p1d/status_201334.jsonl` + `logs/P1_20261116_201716.csv`. Straights centred (offset ≈ 0); curves under-steer:
 offset −0.5…−0.78 with only the right tape seen, heading ≈ −1.15 rad, 4 short dropouts, no STOP_LANE_LOST. Kh ≈ 5 is
 still the proposed fix (heading −1.15 → ≈ −5.8 extra turn in curves, ≈ 0 on straights). UPS battery 10.09 → 9.97 V.
 
