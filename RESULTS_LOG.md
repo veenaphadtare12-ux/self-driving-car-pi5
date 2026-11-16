@@ -405,3 +405,19 @@ YOLO NCNN-vs-.pt parity: still pending (~/best.pt not on the Pi).
   CSV ticks 6005/6006, video 2982/3003 frames. Lane age max 0.224 s (< 0.5 s; FP32 was 0.783 s) → PASS.
   (The FP32 run's results stay in logs/soak_ufld_solo_live.)
 Tests: profiles 6, decision 59, control 16, lanes 22, runtime 15, failsafe 11, web 10 — all OK.
+
+## Pre-flight before the car tests (2026-11-16 14:43) — 15 PASS, 0 WARN, 0 FAIL
+`./preflight.sh` (full: checks, then the page with --profile ufld_yolo, STOPPED + DRY RUN): FPS ufld_solo (INT8 4 t) lane 13.6,
+age max 0.224 s; FPS ufld_yolo lane 10.2, det 10.0, age max 0.236 s; ToF 534 mm, US 1094/202 mm, 59.5 °C, throttled 0x0.
+
+## Stage 1 motors re-run after the re-solder (2026-11-16) — PASS
+Car on a stand, wheels lifted (user's phrase before each run), `motor_step.py` (new: one step per run, 3 s countdown,
+then brake; speed ≤ 40, ≤ 3 s; motors.py unchanged), 20 % duty, 3 s each:
+| step | command | user saw | result |
+|---|---|---|---|
+| forward | L +20 R +20 | all 4 wheels forward, same speed | PASS |
+| backward | L −20 R −20 | all 4 wheels backward, same speed | PASS |
+| left | L −10 R +20 | right side forward, left side slowly backward | PASS |
+| right (first time) | L +20 R −10 | left side forward, right side slowly backward | PASS |
+Left-front polarity fault fixed (2026-11-15: it spun opposite to left back). First attempt moved nothing: the motor
+power switch was off. 20 % duty turns the wheels in the air (load on the track not yet known).
