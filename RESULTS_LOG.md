@@ -421,3 +421,17 @@ then brake; speed ≤ 40, ≤ 3 s; motors.py unchanged), 20 % duty, 3 s each:
 | right (first time) | L +20 R −10 | left side forward, right side slowly backward | PASS |
 Left-front polarity fault fixed (2026-11-15: it spun opposite to left back). First attempt moved nothing: the motor
 power switch was off. 20 % duty turns the wheels in the air (load on the track not yet known).
+
+## Steering direction check (2026-11-16 15:00–15:16, DRY RUN locked, motor switch off) — PASS both profiles
+Page `main_demo.py --web --profile <p> --dry-run --phase P1`, START pressed (DryRunMotors only), car pushed by hand on a
+straight with the zebra crossing ahead; user standing behind the car; values read live from /status (logs/steer_check_*.jsonl).
+| car position | ufld_solo (INT8, no YOLO) | ufld_yolo (INT8 + YOLO) | would steer |
+|---|---|---|---|
+| near RIGHT tape | offset −0.38, L 26.1 / R 33.9 | −0.46, L 25.4 / R 34.6 | left (back to centre) ✔ |
+| centre | −0.07, L 29.3 / R 30.7 | −0.12, L 28.8 / R 31.2 | ~straight ✔ |
+| near LEFT tape | +0.13, L 31.3 / R 28.7 | +0.12, L 31.2 / R 28.8 | right (back to centre) ✔ |
+Sign convention confirmed on the car: offset > 0 = car left of the lane centre → left wheel faster → steers right.
+Camera image not mirrored (frames: the tape the car is near appears on the same side). Lane dots on both tapes across
+the zebra crossing (no false line on the stripes). Note: centre reads −0.07..−0.12 in both profiles (hand placement or
+camera slightly off-centre) — watch for drift on a straight in Part 8 before touching LANE_HEADING_BIAS / centre.
+First "left" attempt was actually at the right tape (viewpoint), clarified with the camera frame.
