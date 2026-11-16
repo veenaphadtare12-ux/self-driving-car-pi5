@@ -1,0 +1,15 @@
+[fans] using gpiochip0
+[fans] ON
+Lane backend: ufld:v2_same_int8
+Loading YOLO...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+[0:05:12.336550306] [2041]  INFO Camera camera_manager.cpp:340 libcamera v0.7.2+rpt20260817
+[0:05:12.349095303] [2096]  INFO RPI pisp.cpp:725 libpisp version v1.7.0 07-08-2026 (09:22:13)
+[0:05:12.360338400] [2096]  INFO IPAProxy ipa_proxy.cpp:184 Using tuning file /usr/share/libcamera/ipa/rpi/pisp/ov5647.json
+[0:05:12.370580071] [2096]  INFO Camera camera_manager.cpp:223 Adding camera '/base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36' for pipeline handler rpi/pisp
+[0:05:12.370623490] [2096]  INFO RPI pisp.cpp:1186 Registered camera /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 to CFE device /dev/media0 and ISP device /dev/media2 using PiSP variant BCM2712_D0
+[0:05:12.373884971] [2096]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc30
+[0:05:12.373918349] [2096]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc12
+[0:05:12.375036902] [2041]  INFO Camera camera.cpp:1216 configuring streams: (0) 640x480-RGB888/SMPTE170M/Rec709/None/Full (1) 640x480-GBRG_PISP_COMP1/RAW
+[0:05:12.375161685] [2096]  INFO RPI pisp.cpp:1502 Sensor: /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 - Selected sensor format: 640x480-SGBRG10_1X10/RAW - Selected CFE format: 640x480-PC1g/RAW

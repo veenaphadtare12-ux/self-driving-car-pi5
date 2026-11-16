@@ -511,3 +511,23 @@ video `videos/P1_20261116_193425.mp4`. User: "completed whole lap perfectly with
 Wheels used the full range (L 0–20.6, R 0–26.2). One STOP_LANE_LOST at 19:35:24, DRIVE again 19:35:30 (cause to confirm).
 Offset mean −0.34 (car rides right of the lane centre; |offset| p95 0.81) → next: try Kh ≈ 5 (heading bias ≈ 0) and
 repeat laps both directions for the rehearsal streak.
+
+## P1 run 4 (20:17:38–20:18:49, after the 20:08 reboot) — lap done (user), Kh stayed 0
+`ufld_yolo`, base 20, Kp 10, Kd 2, turn limit 20, slow-down 0.4, **Kh 0** (slider not changed). Log
+`logs/p8_p1d/status_201246.jsonl` + `logs/P1_20261116_201716.csv`. Straights centred (offset ≈ 0); curves under-steer:
+offset −0.5…−0.78 with only the right tape seen, heading ≈ −1.15 rad, 4 short dropouts, no STOP_LANE_LOST. Kh ≈ 5 is
+still the proposed fix (heading −1.15 → ≈ −5.8 extra turn in curves, ≈ 0 on straights). UPS battery 10.09 → 9.97 V.
+
+## Part 8 P2 run 1 (20:27:54–20:29:17, phase P2, motors) — PASS: 3 obstacle stops, 3 resumes
+Same settings as P1 run 4. Toys placed in the lane one after another (animal, car, person). Each time:
+DRIVE → CAUTION (half speed, box in corridor + ToF 400–800 mm) → STOP_OBSTACLE at ToF < 400 → toy removed →
+"clearing" ≥ 1 s → DRIVE.
+| time | class | CAUTION from | stopped at ToF | stopped for | where |
+|---|---|---|---|---|---|
+| 20:27:57 | animal | 537 mm | 395 mm | 20:28:03–20:28:07 | straight (offset ≈ 0) |
+| 20:28:29 | car | 436 mm | 395 mm | 20:28:30–20:28:33 | curve (offset −0.95, right tape only) — still stopped |
+| 20:28:39 | person | 720 mm | 385 mm | 20:28:46–20:28:50 | straight |
+No fail-safe, no safety-net stop, throttled 0x0. Curves still run wide (offset −0.5…−1.0) as in P1 run 4.
+Note: the ToF often reads ~450–500 mm on an empty track (and 1000–2000 mm at other spots) — harmless because
+STOP_OBSTACLE also needs a YOLO box in the corridor, but it means CAUTION/STOP come from the box as soon as it appears.
+UPS battery 9.76 V after the run (≈ 3.25 V/cell) — charge before the next phases.
