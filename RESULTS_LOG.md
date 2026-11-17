@@ -606,3 +606,15 @@ Same settings (base 20, Kp 10, Kd 2, Kh 0, limit 20). Log `logs/p8_p5/status_194
 | 20:40:16 → 20:40:19 | **STOP_SIGN 3 s** → DRIVE |
 | 20:40:33, 20:40:57 | **STOP_LANE_LOST** on curves (offset −0.85 before) → STOP button |
 Offset mean −0.36, 34 % of the time < −0.7 (yesterday's laps 9–16 %). CPU 64 °C, throttled 0x0, no fail-safe.
+
+## 2026-11-17 night — P1 lane-lost analysis (no setting changed)
+Settings identical to the 2026-11-16 19:35 PASS lap (base 20, Kp 10, Kd 2, Kh 0, limit 20); driving code unchanged since fc007a9
+(only SIGNAL_REGION_X / RED_LIGHT_HEIGHT_RATIO). Log `logs/p8_p7/status_223657.jsonl`.
+| run | offset mean | time offset < −0.7 | lane lost |
+|---|---|---|---|
+| 11-16 19:35 P1 (PASS lap) | −0.34 | 16 % | 1 |
+| 11-17 19:57 P3 / 20:38 P7 | −0.56 / −0.54 | 48 % / 50 % | 4 / 3 |
+| 11-17 23:26 P1 (lane FPS 5.7: parity test was sharing the CPU — not representative) | −0.59 | 54 % | 3 |
+| 11-17 23:33 P1 (lane FPS 10) | −0.12 | 3 % | 2, same curve, confidence dropped to 0 at offset −0.75 |
+Straights stay centred; curves under-steer (max turn = Kp × 1 = 10 at the tape, wheels 6/26). User saw wheels skidding.
+Autostart service `car-demo` (deploy/car-demo.service). UPS 9.7 V at 23:28 (low).
