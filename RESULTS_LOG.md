@@ -559,3 +559,9 @@ towards the light (left side of the image). Log `logs/p8_p5/status_194348.jsonl`
 19:47:20 CAUTION `red far` h 0.08–0.09 → **19:47:26 STOP_RED at h 0.10** → stayed STOP_RED while pushed closer
 (h 0.10 → 0.17) → light switched: "waiting for green" (no signal ≈ 2 s, still stopped) → green x2 → **19:47:41 DRIVE**.
 No fail-safe, throttled 0x0, 53 °C. Next: P5 run 3 with motors (needs "on track").
+
+## Part 8 P5 run 3 (19:49:42–19:51:21, phase P5, motors, "on track") — PASS (user: "working properly")
+Same settings (base 20, Kp 10, Kd 2, Kh 0, limit 20), light on the left, `SIGNAL_REGION_X` (0,1), h 0.10.
+Log `logs/p8_p5/status_194348.jsonl`. DRIVE → 19:49:59 CAUTION `red far` h 0.08 → **19:50:03 STOP_RED at h 0.10** →
+light to green → **19:50:17 DRIVE** → 19:50:34 STOP_LANE_LOST (car at end of run / lifted, ToF 259) → STOP button.
+Offset while driving: mean −0.06, range −0.57…+0.18. No fail-safe.
