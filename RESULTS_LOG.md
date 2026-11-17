@@ -579,3 +579,5 @@ Only STOP_OBSTACLE = safety net 19:58:56–19:59:02 (ToF 116 → 56 mm, while al
 offset −0.7…−1.0, wheels saturated at L ≈ 6 / R ≈ 26 (full turn limit) for up to 30 s → under-steer; the car cannot
 turn tightly enough. Offset mean −0.56 (P5 run 3: −0.06, mostly straight). Possible extra cause: full battery =
 faster car at the same PWM than yesterday's runs at ≈ 10 V.
+User's verdict on P3 run 1 (watching the car): **PASS** — toy beside the lane did not stop the car. The lane-lost
+stops on curves are tracked separately (car ran wider than on 2026-11-16 with identical settings; motor power suspected).

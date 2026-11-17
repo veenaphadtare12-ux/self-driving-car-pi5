@@ -1,30 +1,30 @@
 [
  {
-  "lane_fps": 4.0,
+  "lane_fps": 13.6,
   "det_fps": 0.0,
   "cam_fps": 30.0,
   "ctrl_hz": 20.0,
   "period_ms": {
    "n": 199,
    "mean": 50.0,
-   "p99": 54.9,
-   "max": 55.1,
-   "min": 44.9
+   "p99": 52.5,
+   "max": 54.5,
+   "min": 45.5
   },
   "overruns": 0,
   "tick_ms": {
    "n": 200,
-   "mean": 0.22,
-   "p99": 0.78,
-   "max": 1.21,
+   "mean": 0.28,
+   "p99": 0.81,
+   "max": 3.63,
    "min": 0.13
   },
   "lane_age": {
    "n": 200,
-   "mean": 0.39,
-   "p99": 0.549,
-   "max": 0.566,
-   "min": 0.249
+   "mean": 0.129,
+   "p99": 0.22,
+   "max": 0.224,
+   "min": 0.074
   },
   "det_age": {
    "n": 0,
@@ -34,11 +34,11 @@
    "min": null
   },
   "lane_latency": {
-   "n": 40,
-   "mean": 0.265,
-   "p99": 0.345,
-   "max": 0.345,
-   "min": 0.236
+   "n": 135,
+   "mean": 0.09,
+   "p99": 0.135,
+   "max": 0.146,
+   "min": 0.069
   },
   "det_latency": {
    "n": 0,
@@ -48,17 +48,17 @@
    "min": null
   },
   "lane_proc_ms": {
-   "n": 55,
-   "mean": 248.7,
-   "p99": 300.5,
-   "max": 322.0,
-   "min": 235.6
+   "n": 190,
+   "mean": 72.8,
+   "p99": 104.8,
+   "max": 114.8,
+   "min": 65.8
   },
   "det_proc_ms": null,
-  "temp_c": 66.65,
-  "temp_max": 66.65,
+  "temp_c": 64.45,
+  "temp_max": 64.45,
   "throttled_seen": "0x0",
-  "rss_mb": 339.1,
+  "rss_mb": 229.4,
   "errors": [],
   "mode": "live",
   "ufld_threads": 4,
@@ -66,11 +66,9 @@
   "every": 6,
   "spin": 0,
   "profile": "ufld_solo",
-  "model": "v2_same",
+  "model": "v2_same_int8",
   "busy": 0.99,
   "loop_steady": true,
-  "fails": [
-   "lane_age"
-  ]
+  "fails": []
  }
 ]
