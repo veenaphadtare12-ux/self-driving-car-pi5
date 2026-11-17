@@ -594,3 +594,15 @@ object was removed the car drove on after ≈ 1 s clearing.
 | 20:05:55 | 55 mm (x2) | 20:05:57 |
 The later triggers were closer (55–102 mm): either the object was put in front of the moving car by hand (appears
 inside 200 mm) or the car closes ~100 mm between two ToF readings. Ask user whether the car touched the object.
+
+## Part 8 P7 run 1 — full demo (20:38:45–20:40:58, motors) — every rule worked; lane lost twice on curves
+Same settings (base 20, Kp 10, Kd 2, Kh 0, limit 20). Log `logs/p8_p5/status_194348.jsonl`.
+| time | event |
+|---|---|
+| 20:38:45 → 20:38:56 | person: CAUTION (468 mm) → STOP_OBSTACLE → cleared → DRIVE |
+| 20:39:00 → 20:39:15 | red light: CAUTION h 0.06 → **STOP_RED h 0.10** → green → DRIVE |
+| 20:39:27 → 20:39:30 | car toy on a curve (offset −0.86): STOP_OBSTACLE (284 mm), brief lane lost → DRIVE |
+| 20:40:02 → 20:40:09 | safety net: both ultrasonics 171/156 mm → STOP → DRIVE |
+| 20:40:16 → 20:40:19 | **STOP_SIGN 3 s** → DRIVE |
+| 20:40:33, 20:40:57 | **STOP_LANE_LOST** on curves (offset −0.85 before) → STOP button |
+Offset mean −0.36, 34 % of the time < −0.7 (yesterday's laps 9–16 %). CPU 64 °C, throttled 0x0, no fail-safe.
