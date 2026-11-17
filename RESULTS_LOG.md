@@ -570,3 +570,12 @@ Offset while driving: mean −0.06, range −0.57…+0.18. No fail-safe.
 Planned as a DRY RUN hand check; the page still had DRY RUN off from P5 run 3, so it ran with motors live.
 Log `logs/p8_p5/status_194348.jsonl`. DRIVE → **19:53:25 STOP_SIGN** (3 s countdown) → **19:53:28 DRIVE** (sign
 ignored for 5 s) → STOP button 19:53:37. No fail-safe.
+
+## Part 8 P3 run 1 (19:57:35–19:59:58, phase P3, motors, "on track") — rule OK, lane following on curves FAIL
+Same settings (base 20, Kp 10, Kd 2, Kh 0, turn limit 20, slow-down 0.4); UPS freshly charged (12.3 V at boot).
+Log `logs/p8_p5/status_194348.jsonl`. No YOLO STOP_OBSTACLE at all → toy beside the lane did not stop the car.
+Only STOP_OBSTACLE = safety net 19:58:56–19:59:02 (ToF 116 → 56 mm, while already stopped for lane lost — hand/lift?).
+**Problem:** 4× STOP_LANE_LOST (19:57:47, 19:58:18, 19:58:50, 19:59:51), all on curves: heading −1.0…−1.25 rad,
+offset −0.7…−1.0, wheels saturated at L ≈ 6 / R ≈ 26 (full turn limit) for up to 30 s → under-steer; the car cannot
+turn tightly enough. Offset mean −0.56 (P5 run 3: −0.06, mostly straight). Possible extra cause: full battery =
+faster car at the same PWM than yesterday's runs at ≈ 10 V.
