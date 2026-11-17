@@ -565,3 +565,8 @@ Same settings (base 20, Kp 10, Kd 2, Kh 0, limit 20), light on the left, `SIGNAL
 Log `logs/p8_p5/status_194348.jsonl`. DRIVE → 19:49:59 CAUTION `red far` h 0.08 → **19:50:03 STOP_RED at h 0.10** →
 light to green → **19:50:17 DRIVE** → 19:50:34 STOP_LANE_LOST (car at end of run / lifted, ToF 259) → STOP button.
 Offset while driving: mean −0.06, range −0.57…+0.18. No fail-safe.
+
+## Part 8 P6 (19:53:23–19:53:37, phase P6) — PASS, but DRY RUN was OFF (motors live)
+Planned as a DRY RUN hand check; the page still had DRY RUN off from P5 run 3, so it ran with motors live.
+Log `logs/p8_p5/status_194348.jsonl`. DRIVE → **19:53:25 STOP_SIGN** (3 s countdown) → **19:53:28 DRIVE** (sign
+ignored for 5 s) → STOP button 19:53:37. No fail-safe.
