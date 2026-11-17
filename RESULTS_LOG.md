@@ -552,3 +552,10 @@ stops with the default), test_control 16 OK, test_runtime 15 OK, test_web 10 OK,
 test_lanes 25 OK + test_profiles 6 OK (car_project venv). Replay of the two P5 runs through the real `decide()`:
 run 1 CAUTION (h 0.08) → STOP_RED at h 0.10; run 2 CAUTION (h 0.07) → STOP_RED at h 0.10. Next: DRY RUN check with the
 light by hand, then P5 run 3 (needs "on track").
+
+## Part 8 P5 DRY RUN light check by hand (2026-11-17 19:47, after the 19:41 boot) — PASS
+UPS 12.29 V (charged). Page `main_demo.py --web --profile ufld_yolo --phase P5`, START + DRY RUN, car pushed by hand
+towards the light (left side of the image). Log `logs/p8_p5/status_194348.jsonl`.
+19:47:20 CAUTION `red far` h 0.08–0.09 → **19:47:26 STOP_RED at h 0.10** → stayed STOP_RED while pushed closer
+(h 0.10 → 0.17) → light switched: "waiting for green" (no signal ≈ 2 s, still stopped) → green x2 → **19:47:41 DRIVE**.
+No fail-safe, throttled 0x0, 53 °C. Next: P5 run 3 with motors (needs "on track").

@@ -1,0 +1,38 @@
+[fans] using gpiochip0
+[fans] ON
+Lane backend: ufld:v2_same_int8
+Loading YOLO...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+[0:08:00.597304736] [2664]  INFO Camera camera_manager.cpp:340 libcamera v0.7.2+rpt20260817
+[0:08:00.605908411] [2696]  INFO RPI pisp.cpp:725 libpisp version v1.7.0 07-08-2026 (09:22:13)
+[0:08:00.614985976] [2696]  INFO IPAProxy ipa_proxy.cpp:184 Using tuning file /usr/share/libcamera/ipa/rpi/pisp/ov5647.json
+[0:08:00.622456453] [2696]  INFO Camera camera_manager.cpp:223 Adding camera '/base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36' for pipeline handler rpi/pisp
+[0:08:00.622508525] [2696]  INFO RPI pisp.cpp:1186 Registered camera /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 to CFE device /dev/media3 and ISP device /dev/media1 using PiSP variant BCM2712_D0
+[0:08:00.624957636] [2696]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc30
+[0:08:00.624995394] [2696]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc12
+[0:08:00.625582946] [2664]  INFO Camera camera.cpp:1216 configuring streams: (0) 640x480-RGB888/SMPTE170M/Rec709/None/Full (1) 640x480-GBRG_PISP_COMP1/RAW
+[0:08:00.625680016] [2696]  INFO RPI pisp.cpp:1502 Sensor: /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 - Selected sensor format: 640x480-SGBRG10_1X10/RAW - Selected CFE format: 640x480-PC1g/RAW
+----------------------------------------
+Exception occurred during processing of request from ('10.243.196.87', 52795)
+Traceback (most recent call last):
+  File "/usr/lib/python3.13/socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "/usr/lib/python3.13/http/server.py", line 438, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.13/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/usr/lib/python3.13/socket.py", line 719, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
