@@ -581,3 +581,16 @@ turn tightly enough. Offset mean −0.56 (P5 run 3: −0.06, mostly straight). P
 faster car at the same PWM than yesterday's runs at ≈ 10 V.
 User's verdict on P3 run 1 (watching the car): **PASS** — toy beside the lane did not stop the car. The lane-lost
 stops on curves are tracked separately (car ran wider than on 2026-11-16 with identical settings; motor power suspected).
+
+## Part 8 P4 run 1 (20:05:28–20:06:02, phase P4 = YOLO ignored, motors) — PASS: 5 safety stops, 5 resumes
+Log `logs/p8_p5/status_194348.jsonl`. Every stop = safety net (ToF < 200 mm, 2–3 consecutive readings); each time the
+object was removed the car drove on after ≈ 1 s clearing.
+| stop | ToF at trigger | resumed |
+|---|---|---|
+| 20:05:34 | 191 mm (x2) | 20:05:39 |
+| 20:05:43 | 166 mm (x3) | 20:05:47 |
+| 20:05:48 | 102 mm (x3) | 20:05:50 |
+| 20:05:51 | 96 mm (x2) | 20:05:54 |
+| 20:05:55 | 55 mm (x2) | 20:05:57 |
+The later triggers were closer (55–102 mm): either the object was put in front of the moving car by hand (appears
+inside 200 mm) or the car closes ~100 mm between two ToF readings. Ask user whether the car touched the object.
