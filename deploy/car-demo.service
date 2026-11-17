@@ -1,0 +1,23 @@
+# Starts the demo page on boot: http://<Pi IP>:8001 (or http://veena-pi5.local:8001)
+# The page always starts STOPPED + DRY RUN; the motors only move after START with DRY RUN unticked.
+# Install:  sudo cp deploy/car-demo.service /etc/systemd/system/ && sudo systemctl daemon-reload && sudo systemctl enable car-demo
+# Control:  sudo systemctl stop|start|restart|status car-demo      Logs: logs/boot/server.txt
+[Unit]
+Description=Self-driving car demo page (main_demo.py --web, profile ufld_yolo)
+After=network.target
+
+[Service]
+User=veena_pi
+WorkingDirectory=/home/veena_pi/self_driving_car/pi_deploy
+Environment=PYTHONUNBUFFERED=1
+ExecStartPre=/bin/sleep 5
+ExecStart=/home/veena_pi/car_project/venv/bin/python main_demo.py --web --profile ufld_yolo --phase P1
+Restart=on-failure
+RestartSec=5
+KillSignal=SIGINT
+TimeoutStopSec=10
+StandardOutput=append:/home/veena_pi/self_driving_car/pi_deploy/logs/boot/server.txt
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target
