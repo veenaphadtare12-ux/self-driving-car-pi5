@@ -625,3 +625,13 @@ Settings: base 20, **Kp 15** (was 10), Kd 2, Kh 0, limit 20. UPS 12.28 V before 
 lane lost 0 (longest dropout 8 ticks = 0.4 s), offset mean −0.23, min −0.64, time offset < −0.7 **0 %** (was 3–54 % at Kp 10),
 wheels mean L15/R22 max 21/26, lane 8–9 FPS, lane age max 0.36 s, 65 °C, throttled 0x0, no failsafe.
 test_decision 60 OK, test_control 16 OK, test_lanes 25 OK. Kp 15 committed as the demo value.
+
+## 2026-11-18 06:53–07:05 — morning rehearsal at Kp 15 (same log `logs/run_20261117_235954.csv`, t = s since 06:41 boot)
+| run | length | result |
+|---|---|---|
+| P7 #1 (t 723) | 173 s | all rules OK: person stop <400 + resume, red far→STOP_RED h 0.10→green go, car stop, animal stop, stop sign 3 s, safety net 181–186 mm. **9× STOP_LANE_LOST** t 753–864 (~41 s stopped, lane FPS 10, recover offsets −0.26..−0.6) |
+| P7 #2 (t 968) | 39 s | person stop, car stop OK; 1× lane lost (recovered at −0.77) |
+| P7 #3 (t 1134) | 100 s | **clean**: person, safety net, red→green, car, animal, stop sign, safety net; 0 lane lost |
+| P3 (t 1288) | 13 s | DRIVE throughout; red light / stop sign correctly ignored in P3 |
+| P5 (t 1381) | 26 s | PASS: red far h 0.07–0.08 → STOP_RED h 0.10 → green resumes after 13.5 s |
+No reboot (uptime 25 min), throttled 0x0, max 68 °C, no failsafe, lane age max 0.36 s. UPS 12.28 → 12.02 V.
