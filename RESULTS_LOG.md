@@ -618,3 +618,10 @@ Settings identical to the 2026-11-16 19:35 PASS lap (base 20, Kp 10, Kd 2, Kh 0,
 | 11-17 23:33 P1 (lane FPS 10) | −0.12 | 3 % | 2, same curve, confidence dropped to 0 at offset −0.75 |
 Straights stay centred; curves under-steer (max turn = Kp × 1 = 10 at the tape, wheels 6/26). User saw wheels skidding.
 Autostart service `car-demo` (deploy/car-demo.service). UPS 9.7 V at 23:28 (low).
+
+## 2026-11-18 06:45 — P1 run at Kp 15: PASS (user: "everything worked properly")
+Settings: base 20, **Kp 15** (was 10), Kd 2, Kh 0, limit 20. UPS 12.28 V before / 12.13 V after. Log `logs/run_20261117_235954.csv`
+(name uses the pre-NTP boot clock). 61 s driving, DRY RUN off, state DRIVE the whole time:
+lane lost 0 (longest dropout 8 ticks = 0.4 s), offset mean −0.23, min −0.64, time offset < −0.7 **0 %** (was 3–54 % at Kp 10),
+wheels mean L15/R22 max 21/26, lane 8–9 FPS, lane age max 0.36 s, 65 °C, throttled 0x0, no failsafe.
+test_decision 60 OK, test_control 16 OK, test_lanes 25 OK. Kp 15 committed as the demo value.

@@ -37,7 +37,7 @@ sudo systemctl start car-demo         # page back (≈ 30 s)
 | setting | value |
 |---|---|
 | base speed | 20 |
-| Kp | 10 |
+| Kp | 15 (2026-11-18: 10 under-steered on curves) |
 | Kd | 2 |
 | Kh | 0 (5 only if tested and better) |
 | turn limit | 20 |

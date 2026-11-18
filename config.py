@@ -163,7 +163,7 @@ UFLD_SINGLE_LINE_CONFIDENCE = 0.8
 # The first P1 run (2026-11-16) used kp 10 / limit 15 at base 30 WITHOUT kh and slow-down: the car drifted right and
 # lost the lane (logs/P1_20261116_180826.csv). Start values below restore kh + slow-down and give more turn for the
 # floor (skid steer); tune on the track with the page sliders (Part 8).
-STEER_KP_UFLD = 10.0          # back to 10 after the motor L/R swap fix: the 'too weak' reading was really the swapped sides
+STEER_KP_UFLD = 15.0          # 2026-11-17 night: 10 -> 15. At Kp 10 the car sat at offset -0.7 on curves for 2-3 s with steer only 7 (wheels 10/24) and lost the lane (logs/run_20261117_234352.csv)
 STEER_KD_UFLD = 2.0
 STEER_KH_UFLD = 0.0           # turn per radian of lane heading (> 0 = lane runs right ahead -> steer right).
                               # car_project used 10. Kept 0 until the heading is checked on the car (DRY RUN, car
