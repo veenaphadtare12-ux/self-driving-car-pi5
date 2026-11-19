@@ -1,0 +1,6 @@
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+NCNN obstacle_v1_ncnn_model imgsz 416 | red frames 292, green frames 276 | pipeline conf 0.4, scan conf 0.1
+  red  : {'frames': 292, 'with_light_red': 187, 'with_light_green': 0, 'max_light_green_conf': 0.214, 'bad_files': []}
+  green: {'frames': 276, 'with_light_green': 208, 'with_light_red': 0, 'max_light_red_conf': 0.155, 'bad_files': []}
+red never green: PASS  (233 s)

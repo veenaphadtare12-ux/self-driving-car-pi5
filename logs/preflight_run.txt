@@ -1,0 +1,62 @@
+=== pre-flight 2026-11-16 14:43:38 (no motor is driven) ===
+[32mPASS[0m  camera detected              0 : ov5647 [2592x1944 10-bit GBRG] (/base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36)
+[1:43:14.603659992] [13448]  INFO Camera camera_manager.cpp:340 libcamera v0.7.2+rpt20260817
+[1:43:14.612404414] [13463]  INFO RPI pisp.cpp:725 libpisp version v1.7.0 07-08-2026 (09:22:13)
+[1:43:14.620139688] [13463]  INFO IPAProxy ipa_proxy.cpp:184 Using tuning file /usr/share/libcamera/ipa/rpi/pisp/ov5647.json
+[1:43:14.627167365] [13463]  INFO Camera camera_manager.cpp:223 Adding camera '/base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36' for pipeline handler rpi/pisp
+[1:43:14.627204050] [13463]  INFO RPI pisp.cpp:1186 Registered camera /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 to CFE device /dev/media0 and ISP device /dev/media2 using PiSP variant BCM2712_D0
+[1:43:14.629418192] [13463]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc30
+[1:43:14.629439598] [13463]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc12
+[1:43:14.629999310] [13448]  INFO Camera camera.cpp:1216 configuring streams: (0) 640x480-RGB888/SMPTE170M/Rec709/None/Full (1) 640x480-GBRG_PISP_COMP1/RAW
+[1:43:14.630088827] [13463]  INFO RPI pisp.cpp:1502 Sensor: /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 - Selected sensor format: 640x480-SGBRG10_1X10/RAW - Selected CFE format: 640x480-PC1g/RAW
+[32mPASS[0m  camera colours               640x480 mean B,G,R [74.0, 73.0, 67.0] std [28.0, 39.0, 27.0] (frame: logs/preflight_frame.jpg; check a red object looks red)
+[sensors] VL53L5CX init (firmware upload takes ~10 s)...
+[sensors] VL53L5CX ranging at 15 Hz
+[sensors] VL53L5CX OK
+[ultrasonic] using gpiochip0
+[32mPASS[0m  ToF                          534 mm
+[32mPASS[0m  ultrasonic left              1094 mm
+[32mPASS[0m  ultrasonic right             202 mm
+[32mPASS[0m  IMU                          MPU6050 WHO_AM_I 0x70
+[32mPASS[0m  model checksums              UFLD models + anchors match SHA256SUMS
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+[32mPASS[0m  models load                  UFLD ['v2_same', 'v2_plus', 'v2_same_int8'], Hough, YOLO NCNN
+[32mPASS[0m  FPS ufld_solo                10s v2_same_int8 4t: lane 13.6 (need >= 2.8), no YOLO, control 20.0 Hz, lane age max 0.224 s (need < 0.5), 64.45 C
+[32mPASS[0m  FPS ufld_yolo                10s v2_same_int8 3t: lane 10.2 (need >= 2.8), det 10.0 (need >= 4.5), control 20.0 Hz, lane age max 0.236 s (need < 0.5), 66.1 C
+[32mPASS[0m  CPU temperature              59.5 C (half speed at 80, stop at 85)
+[32mPASS[0m  power / throttling           get_throttled=0x0
+[32mPASS[0m  disk space                   84.8 GB free (videos ~10-20 MB/min)
+[32mPASS[0m  network                      page: http://192.168.0.130:8001/
+[fans] using gpiochip0
+[fans] ON
+[fans] OFF
+[32mPASS[0m  fans                         relay switched ON for 1.5 s then OFF - listen for the fans
+=== 15 PASS, 0 WARN, 0 FAIL ===
+Starting the demo page (profile ufld_yolo): STOPPED, DRY RUN on. Ctrl+C to quit.
+[fans] using gpiochip0
+[fans] ON
+Lane backend: ufld:v2_same_int8
+Loading YOLO...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+[1:44:18.454265793] [13443]  INFO Camera camera_manager.cpp:340 libcamera v0.7.2+rpt20260817
+[1:44:18.462904247] [13665]  INFO RPI pisp.cpp:725 libpisp version v1.7.0 07-08-2026 (09:22:13)
+[1:44:18.471299076] [13665]  INFO IPAProxy ipa_proxy.cpp:184 Using tuning file /usr/share/libcamera/ipa/rpi/pisp/ov5647.json
+[1:44:18.478398873] [13665]  INFO Camera camera_manager.cpp:223 Adding camera '/base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36' for pipeline handler rpi/pisp
+[1:44:18.478436521] [13665]  INFO RPI pisp.cpp:1186 Registered camera /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 to CFE device /dev/media0 and ISP device /dev/media2 using PiSP variant BCM2712_D0
+[1:44:18.480931198] [13665]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc30
+[1:44:18.480971734] [13665]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc12
+[1:44:18.481525595] [13443]  INFO Camera camera.cpp:1216 configuring streams: (0) 640x480-RGB888/SMPTE170M/Rec709/None/Full (1) 640x480-GBRG_PISP_COMP1/RAW
+[1:44:18.481629556] [13665]  INFO RPI pisp.cpp:1502 Sensor: /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 - Selected sensor format: 640x480-SGBRG10_1X10/RAW - Selected CFE format: 640x480-PC1g/RAW
+[sensors] VL53L5CX init (firmware upload takes ~10 s)...
+[sensors] VL53L5CX ranging at 15 Hz
+[sensors] VL53L5CX OK
+[ultrasonic] using gpiochip0
+Logging to /home/veena_pi/self_driving_car/pi_deploy/logs/run_20261116_144443.csv
+Demo page: http://192.168.0.130:8001/   (STOPPED, DRY RUN)
+Running. q = quit, space/e = E-STOP, r = reset, g = START, s = STOP, Ctrl+C = stop.
+
+Ctrl+C: stopping.
+[threaded] exit: interrupt | {'lane_fps': 10.33, 'det_fps': 10.0, 'cam_fps': 30.0, 'ctrl_hz': 19.99, 'period_ms': {'n': 4517, 'mean': 50.0, 'p99': 54.5, 'max': 210.9, 'min': 0.2}, 'overruns': 1, 'tick_ms': {'n': 4518, 'mean': 0.34, 'p99': 1.31, 'max': 6.38, 'min': 0.08}, 'lane_age': {'n': 4509, 'mean': 0.16, 'p99': 0.228, 'max': 0.318, 'min': 0.09}, 'det_age': {'n': 4508, 'mean': 0.124, 'p99': 0.182, 'max': 0.356, 'min': 0.063}, 'lane_latency': {'n': 2412, 'mean': 0.113, 'p99': 0.14, 'max': 0.222, 'min': 0.082}, 'det_latency': {'n': 4508, 'mean': 0.074, 'p99': 0.093, 'max': 0.255, 'min': 0.06}, 'lane_proc_ms': {'n': 2413, 'mean': 93.5, 'p99': 108.8, 'max': 208.0, 'min': 80.9}, 'det_proc_ms': {'n': 2256, 'mean': 74.1, 'p99': 93.3, 'max': 255.1, 'min': 59.5}, 'temp_c': 67.75, 'temp_max': 68.3, 'throttled_seen': '0x0', 'rss_mb': 566.3, 'errors': []}
+[fans] OFF

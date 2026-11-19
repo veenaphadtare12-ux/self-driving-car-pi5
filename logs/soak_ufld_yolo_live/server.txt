@@ -1,0 +1,26 @@
+[fans] using gpiochip0
+[fans] ON
+Lane backend: ufld:v2_same_int8
+Loading YOLO...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+[1:07:13.694154256] [9559]  INFO Camera camera_manager.cpp:340 libcamera v0.7.2+rpt20260817
+[1:07:13.702844838] [9605]  INFO RPI pisp.cpp:725 libpisp version v1.7.0 07-08-2026 (09:22:13)
+[1:07:13.710974606] [9605]  INFO IPAProxy ipa_proxy.cpp:184 Using tuning file /usr/share/libcamera/ipa/rpi/pisp/ov5647.json
+[1:07:13.717968323] [9605]  INFO Camera camera_manager.cpp:223 Adding camera '/base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36' for pipeline handler rpi/pisp
+[1:07:13.718007249] [9605]  INFO RPI pisp.cpp:1186 Registered camera /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 to CFE device /dev/media0 and ISP device /dev/media2 using PiSP variant BCM2712_D0
+[1:07:13.720152223] [9605]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc30
+[1:07:13.720173705] [9605]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc12
+[1:07:13.720720721] [9559]  INFO Camera camera.cpp:1216 configuring streams: (0) 640x480-RGB888/SMPTE170M/Rec709/None/Full (1) 640x480-GBRG_PISP_COMP1/RAW
+[1:07:13.720816980] [9605]  INFO RPI pisp.cpp:1502 Sensor: /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 - Selected sensor format: 640x480-SGBRG10_1X10/RAW - Selected CFE format: 640x480-PC1g/RAW
+[sensors] VL53L5CX init (firmware upload takes ~10 s)...
+[sensors] VL53L5CX ranging at 15 Hz
+[sensors] VL53L5CX OK
+[ultrasonic] using gpiochip0
+Logging to /home/veena_pi/self_driving_car/pi_deploy/logs/run_20261116_140738.csv
+Demo page: http://192.168.0.130:8001/   (STOPPED, DRY RUN)
+Running. q = quit, space/e = E-STOP, r = reset, g = START, s = STOP, Ctrl+C = stop.
+
+Ctrl+C: stopping.
+[threaded] exit: interrupt | {'lane_fps': 10.33, 'det_fps': 10.0, 'cam_fps': 30.0, 'ctrl_hz': 20.0, 'period_ms': {'n': 12204, 'mean': 50.0, 'p99': 54.1, 'max': 178.8, 'min': 0.2}, 'overruns': 1, 'tick_ms': {'n': 12205, 'mean': 0.35, 'p99': 1.35, 'max': 8.08, 'min': 0.08}, 'lane_age': {'n': 12195, 'mean': 0.161, 'p99': 0.228, 'max': 0.347, 'min': 0.088}, 'det_age': {'n': 12194, 'mean': 0.124, 'p99': 0.18, 'max': 0.306, 'min': 0.06}, 'lane_latency': {'n': 6452, 'mean': 0.113, 'p99': 0.14, 'max': 0.28, 'min': 0.083}, 'det_latency': {'n': 12194, 'mean': 0.074, 'p99': 0.091, 'max': 0.218, 'min': 0.06}, 'lane_proc_ms': {'n': 6452, 'mean': 94.5, 'p99': 106.1, 'max': 257.7, 'min': 79.9}, 'det_proc_ms': {'n': 6102, 'mean': 73.9, 'p99': 91.4, 'max': 217.6, 'min': 59.5}, 'temp_c': 68.3, 'temp_max': 69.4, 'throttled_seen': '0x0', 'rss_mb': 587.3, 'errors': []}
+[fans] OFF

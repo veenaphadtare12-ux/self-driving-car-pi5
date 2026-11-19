@@ -21,3 +21,153 @@ Logging to /home/veena_pi/self_driving_car/pi_deploy/logs/run_20261117_224048.cs
 Demo page: http://10.243.196.141:8001/   (STOPPED, DRY RUN)
 Running. q = quit, space/e = E-STOP, r = reset, g = START, s = STOP, Ctrl+C = stop.
 [motors] using gpiochip0
+
+Ctrl+C: stopping.
+[threaded] exit: interrupt | {'lane_fps': 9.33, 'det_fps': 9.67, 'cam_fps': 29.33, 'ctrl_hz': 19.98, 'period_ms': {'n': 75260, 'mean': 50.1, 'p99': 108.7, 'max': 203.6, 'min': 0.2}, 'overruns': 8929, 'tick_ms': {'n': 75261, 'mean': 0.3, 'p99': 1.29, 'max': 104.31, 'min': 0.06}, 'lane_age': {'n': 75251, 'mean': 0.229, 'p99': 0.432, 'max': 0.636, 'min': 0.093}, 'det_age': {'n': 75251, 'mean': 0.142, 'p99': 0.213, 'max': 0.374, 'min': 0.052}, 'lane_latency': {'n': 33292, 'mean': 0.142, 'p99': 0.305, 'max': 0.409, 'min': 0.091}, 'det_latency': {'n': 75251, 'mean': 0.072, 'p99': 0.107, 'max': 0.275, 'min': 0.05}, 'lane_proc_ms': {'n': 33295, 'mean': 113.1, 'p99': 191.7, 'max': 358.7, 'min': 89.8}, 'det_proc_ms': {'n': 37241, 'mean': 71.8, 'p99': 91.4, 'max': 274.9, 'min': 50.1}, 'temp_c': 66.1, 'temp_max': 68.3, 'throttled_seen': '0x0', 'rss_mb': 547.3, 'errors': []}
+[fans] OFF
+[motors] stopped and released
+[fans] using gpiochip0
+[fans] ON
+Lane backend: ufld:v2_same_int8
+Loading YOLO...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+[sensors] VL53L5CX init (firmware upload takes ~10 s)...
+[sensors] VL53L5CX ranging at 15 Hz
+[sensors] VL53L5CX OK
+[ultrasonic] using gpiochip0
+[1:19:23.828362800] [25930]  INFO Camera camera_manager.cpp:340 libcamera v0.7.2+rpt20260817
+[1:19:23.840889129] [25958]  INFO RPI pisp.cpp:725 libpisp version v1.7.0 07-08-2026 (09:22:13)
+[1:19:23.872160793] [25958]  INFO IPAProxy ipa_proxy.cpp:184 Using tuning file /usr/share/libcamera/ipa/rpi/pisp/ov5647.json
+[1:19:23.879840834] [25958]  INFO Camera camera_manager.cpp:223 Adding camera '/base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36' for pipeline handler rpi/pisp
+[1:19:23.879879138] [25958]  INFO RPI pisp.cpp:1186 Registered camera /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 to CFE device /dev/media2 and ISP device /dev/media0 using PiSP variant BCM2712_D0
+[1:19:23.882735822] [25958]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc30
+[1:19:23.882759586] [25958]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc12
+[1:19:23.883337461] [25930]  INFO Camera camera.cpp:1216 configuring streams: (0) 640x480-RGB888/SMPTE170M/Rec709/None/Full (1) 640x480-GBRG_PISP_COMP1/RAW
+[1:19:23.883436759] [25958]  INFO RPI pisp.cpp:1502 Sensor: /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 - Selected sensor format: 640x480-SGBRG10_1X10/RAW - Selected CFE format: 640x480-PC1g/RAW
+Logging to /home/veena_pi/self_driving_car/pi_deploy/logs/run_20261117_234352.csv
+Demo page: http://10.243.196.141:8001/   (STOPPED, DRY RUN)
+Running. q = quit, space/e = E-STOP, r = reset, g = START, s = STOP, Ctrl+C = stop.
+[motors] using gpiochip0
+[fans] using gpiochip0
+[fans] ON
+Lane backend: ufld:v2_same_int8
+Loading YOLO...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+[sensors] VL53L5CX init (firmware upload takes ~10 s)...
+[sensors] VL53L5CX ranging at 15 Hz
+[sensors] VL53L5CX OK
+[ultrasonic] using gpiochip0
+[0:00:29.878070184] [1502]  INFO Camera camera_manager.cpp:340 libcamera v0.7.2+rpt20260817
+[0:00:29.886606870] [1888]  INFO RPI pisp.cpp:725 libpisp version v1.7.0 07-08-2026 (09:22:13)
+[0:00:29.894712073] [1888]  INFO IPAProxy ipa_proxy.cpp:184 Using tuning file /usr/share/libcamera/ipa/rpi/pisp/ov5647.json
+[0:00:29.901692870] [1888]  INFO Camera camera_manager.cpp:223 Adding camera '/base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36' for pipeline handler rpi/pisp
+[0:00:29.901723314] [1888]  INFO RPI pisp.cpp:1186 Registered camera /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 to CFE device /dev/media3 and ISP device /dev/media1 using PiSP variant BCM2712_D0
+[0:00:29.903973832] [1888]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc30
+[0:00:29.903997425] [1888]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc12
+[0:00:29.904555851] [1502]  INFO Camera camera.cpp:1216 configuring streams: (0) 640x480-RGB888/SMPTE170M/Rec709/None/Full (1) 640x480-GBRG_PISP_COMP1/RAW
+[0:00:29.904649203] [1888]  INFO RPI pisp.cpp:1502 Sensor: /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 - Selected sensor format: 640x480-SGBRG10_1X10/RAW - Selected CFE format: 640x480-PC1g/RAW
+Logging to /home/veena_pi/self_driving_car/pi_deploy/logs/run_20261117_234835.csv
+Demo page: http://10.243.196.141:8001/   (STOPPED, DRY RUN)
+Running. q = quit, space/e = E-STOP, r = reset, g = START, s = STOP, Ctrl+C = stop.
+
+Ctrl+C: stopping.
+[threaded] exit: interrupt | {'lane_fps': 9.67, 'det_fps': 10.0, 'cam_fps': 30.0, 'ctrl_hz': 19.98, 'period_ms': {'n': 10473, 'mean': 50.1, 'p99': 129.4, 'max': 169.7, 'min': 0.2}, 'overruns': 1148, 'tick_ms': {'n': 10474, 'mean': 0.26, 'p99': 1.27, 'max': 10.45, 'min': 0.06}, 'lane_age': {'n': 10464, 'mean': 0.269, 'p99': 0.464, 'max': 0.58, 'min': 0.094}, 'det_age': {'n': 10464, 'mean': 0.143, 'p99': 0.234, 'max': 0.317, 'min': 0.054}, 'lane_latency': {'n': 3765, 'mean': 0.17, 'p99': 0.304, 'max': 0.37, 'min': 0.091}, 'det_latency': {'n': 10464, 'mean': 0.072, 'p99': 0.116, 'max': 0.155, 'min': 0.051}, 'lane_proc_ms': {'n': 3765, 'mean': 139.1, 'p99': 222.9, 'max': 309.9, 'min': 88.6}, 'det_proc_ms': {'n': 5103, 'mean': 72.7, 'p99': 116.8, 'max': 154.7, 'min': 51.0}, 'temp_c': 65.0, 'temp_max': 68.3, 'throttled_seen': '0x0', 'rss_mb': 572.3, 'errors': []}
+[fans] OFF
+[fans] using gpiochip0
+[fans] ON
+Lane backend: ufld:v2_same_int8
+Loading YOLO...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+[sensors] VL53L5CX init (firmware upload takes ~10 s)...
+[sensors] VL53L5CX ranging at 15 Hz
+[sensors] VL53L5CX OK
+[ultrasonic] using gpiochip0
+[0:00:35.651114015] [1500]  INFO Camera camera_manager.cpp:340 libcamera v0.7.2+rpt20260817
+[0:00:35.659685200] [1828]  INFO RPI pisp.cpp:725 libpisp version v1.7.0 07-08-2026 (09:22:13)
+[0:00:35.667882626] [1828]  INFO IPAProxy ipa_proxy.cpp:184 Using tuning file /usr/share/libcamera/ipa/rpi/pisp/ov5647.json
+[0:00:35.674878719] [1828]  INFO Camera camera_manager.cpp:223 Adding camera '/base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36' for pipeline handler rpi/pisp
+[0:00:35.674909052] [1828]  INFO RPI pisp.cpp:1186 Registered camera /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 to CFE device /dev/media0 and ISP device /dev/media2 using PiSP variant BCM2712_D0
+[0:00:35.677225811] [1828]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc30
+[0:00:35.677254552] [1828]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc12
+[0:00:35.677815663] [1500]  INFO Camera camera.cpp:1216 configuring streams: (0) 640x480-RGB888/SMPTE170M/Rec709/None/Full (1) 640x480-GBRG_PISP_COMP1/RAW
+[0:00:35.677907644] [1828]  INFO RPI pisp.cpp:1502 Sensor: /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 - Selected sensor format: 640x480-SGBRG10_1X10/RAW - Selected CFE format: 640x480-PC1g/RAW
+Logging to /home/veena_pi/self_driving_car/pi_deploy/logs/run_20261117_235954.csv
+Demo page: http://10.243.196.141:8001/   (STOPPED, DRY RUN)
+Running. q = quit, space/e = E-STOP, r = reset, g = START, s = STOP, Ctrl+C = stop.
+[motors] using gpiochip0
+
+Ctrl+C: stopping.
+[threaded] exit: interrupt | {'lane_fps': 9.67, 'det_fps': 10.0, 'cam_fps': 29.67, 'ctrl_hz': 19.98, 'period_ms': {'n': 38341, 'mean': 50.1, 'p99': 103.9, 'max': 1003.6, 'min': 0.2}, 'overruns': 3969, 'tick_ms': {'n': 38342, 'mean': 0.29, 'p99': 1.38, 'max': 47.34, 'min': 0.07}, 'lane_age': {'n': 38331, 'mean': 0.195, 'p99': 0.297, 'max': 0.595, 'min': 0.093}, 'det_age': {'n': 38332, 'mean': 0.138, 'p99': 0.179, 'max': 0.315, 'min': 0.053}, 'lane_latency': {'n': 18714, 'mean': 0.124, 'p99': 0.198, 'max': 0.384, 'min': 0.09}, 'det_latency': {'n': 38332, 'mean': 0.07, 'p99': 0.083, 'max': 0.155, 'min': 0.05}, 'lane_proc_ms': {'n': 18729, 'mean': 102.4, 'p99': 177.6, 'max': 328.0, 'min': 89.3}, 'det_proc_ms': {'n': 19173, 'mean': 69.3, 'p99': 86.1, 'max': 154.5, 'min': 49.7}, 'temp_c': 64.45, 'temp_max': 68.85, 'throttled_seen': '0x0', 'rss_mb': 577.2, 'errors': []}
+[fans] OFF
+[motors] stopped and released
+[fans] using gpiochip0
+[fans] ON
+Lane backend: ufld:v2_same_int8
+Loading YOLO...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+[sensors] VL53L5CX init (firmware upload takes ~10 s)...
+[sensors] VL53L5CX ranging at 15 Hz
+[sensors] VL53L5CX OK
+[ultrasonic] using gpiochip0
+[0:00:25.466149779] [1493]  INFO Camera camera_manager.cpp:340 libcamera v0.7.2+rpt20260817
+[0:00:25.474770724] [1799]  INFO RPI pisp.cpp:725 libpisp version v1.7.0 07-08-2026 (09:22:13)
+[0:00:25.483050705] [1799]  INFO IPAProxy ipa_proxy.cpp:184 Using tuning file /usr/share/libcamera/ipa/rpi/pisp/ov5647.json
+[0:00:25.490113668] [1799]  INFO Camera camera_manager.cpp:223 Adding camera '/base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36' for pipeline handler rpi/pisp
+[0:00:25.490147835] [1799]  INFO RPI pisp.cpp:1186 Registered camera /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 to CFE device /dev/media1 and ISP device /dev/media0 using PiSP variant BCM2712_D0
+[0:00:25.492550798] [1799]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc30
+[0:00:25.492580854] [1799]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc12
+[0:00:25.493143798] [1493]  INFO Camera camera.cpp:1216 configuring streams: (0) 640x480-RGB888/SMPTE170M/Rec709/None/Full (1) 640x480-GBRG_PISP_COMP1/RAW
+[0:00:25.493234817] [1799]  INFO RPI pisp.cpp:1502 Sensor: /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 - Selected sensor format: 640x480-SGBRG10_1X10/RAW - Selected CFE format: 640x480-PC1g/RAW
+Logging to /home/veena_pi/self_driving_car/pi_deploy/logs/run_20261118_071352.csv
+Demo page: http://10.243.196.141:8001/   (STOPPED, DRY RUN)
+Running. q = quit, space/e = E-STOP, r = reset, g = START, s = STOP, Ctrl+C = stop.
+[motors] using gpiochip0
+[fans] using gpiochip0
+[fans] ON
+Lane backend: ufld:v2_same_int8
+Loading YOLO...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+[sensors] VL53L5CX init (firmware upload takes ~10 s)...
+[sensors] VL53L5CX ranging at 15 Hz
+[sensors] VL53L5CX OK
+[ultrasonic] using gpiochip0
+[0:00:34.415170997] [1391]  INFO Camera camera_manager.cpp:340 libcamera v0.7.2+rpt20260817
+[0:00:34.423669941] [1865]  INFO RPI pisp.cpp:725 libpisp version v1.7.0 07-08-2026 (09:22:13)
+[0:00:34.431778738] [1865]  INFO IPAProxy ipa_proxy.cpp:184 Using tuning file /usr/share/libcamera/ipa/rpi/pisp/ov5647.json
+[0:00:34.438737293] [1865]  INFO Camera camera_manager.cpp:223 Adding camera '/base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36' for pipeline handler rpi/pisp
+[0:00:34.438766589] [1865]  INFO RPI pisp.cpp:1186 Registered camera /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 to CFE device /dev/media1 and ISP device /dev/media3 using PiSP variant BCM2712_D0
+[0:00:34.441078256] [1865]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc30
+[0:00:34.441103941] [1865]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc12
+[0:00:34.441658960] [1391]  INFO Camera camera.cpp:1216 configuring streams: (0) 640x480-RGB888/SMPTE170M/Rec709/None/Full (1) 640x480-GBRG_PISP_COMP1/RAW
+[0:00:34.441746719] [1865]  INFO RPI pisp.cpp:1502 Sensor: /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 - Selected sensor format: 640x480-SGBRG10_1X10/RAW - Selected CFE format: 640x480-PC1g/RAW
+Logging to /home/veena_pi/self_driving_car/pi_deploy/logs/run_20261118_162225.csv
+Demo page: http://10.243.196.141:8001/   (STOPPED, DRY RUN)
+Running. q = quit, space/e = E-STOP, r = reset, g = START, s = STOP, Ctrl+C = stop.
+[motors] using gpiochip0
+[fans] using gpiochip0
+[fans] ON
+Lane backend: ufld:v2_same_int8
+Loading YOLO...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+[sensors] VL53L5CX init (firmware upload takes ~10 s)...
+[sensors] VL53L5CX ranging at 15 Hz
+[sensors] VL53L5CX OK
+[ultrasonic] using gpiochip0
+[0:00:34.837048755] [1202]  INFO Camera camera_manager.cpp:340 libcamera v0.7.2+rpt20260817
+[0:00:34.845780848] [1833]  INFO RPI pisp.cpp:725 libpisp version v1.7.0 07-08-2026 (09:22:13)
+[0:00:34.854291681] [1833]  INFO IPAProxy ipa_proxy.cpp:184 Using tuning file /usr/share/libcamera/ipa/rpi/pisp/ov5647.json
+[0:00:34.861299144] [1833]  INFO Camera camera_manager.cpp:223 Adding camera '/base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36' for pipeline handler rpi/pisp
+[0:00:34.861330552] [1833]  INFO RPI pisp.cpp:1186 Registered camera /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 to CFE device /dev/media2 and ISP device /dev/media0 using PiSP variant BCM2712_D0
+[0:00:34.863619515] [1833]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc30
+[0:00:34.863647459] [1833]  WARN V4L2 v4l2_pixelformat.cpp:346 Unsupported V4L2 pixel format Nc12
+[0:00:34.864201052] [1202]  INFO Camera camera.cpp:1216 configuring streams: (0) 640x480-RGB888/SMPTE170M/Rec709/None/Full (1) 640x480-GBRG_PISP_COMP1/RAW
+[0:00:34.864294496] [1833]  INFO RPI pisp.cpp:1502 Sensor: /base/axi/pcie@1000120000/rp1/i2c@88000/ov5647@36 - Selected sensor format: 640x480-SGBRG10_1X10/RAW - Selected CFE format: 640x480-PC1g/RAW
+Logging to /home/veena_pi/self_driving_car/pi_deploy/logs/run_20261118_164825.csv
+Demo page: http://10.243.196.141:8001/   (STOPPED, DRY RUN)
+Running. q = quit, space/e = E-STOP, r = reset, g = START, s = STOP, Ctrl+C = stop.

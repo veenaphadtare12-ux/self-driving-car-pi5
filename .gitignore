@@ -7,3 +7,11 @@ yolo_frames/
 models/ufld/*.onnx
 replay/
 models/ufld/candidates/
+
+# raw recordings and bulk run logs (selected logs are force-added)
+videos/
+logs/run_*.csv
+logs/P[0-9]_*.csv
+logs/p8_p1/
+logs/p8_p1b/
+logs/heading_check/

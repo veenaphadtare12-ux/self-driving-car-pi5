@@ -1,0 +1,13 @@
+[fans] using gpiochip0
+[fans] ON
+Lane backend: ufld:v2_same_int8
+Loading YOLO...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+Loading /home/veena_pi/self_driving_car/pi_deploy/models/obstacle_v1_ncnn_model for NCNN inference...
+Logging to /home/veena_pi/self_driving_car/pi_deploy/logs/run_20261116_134622.csv
+Demo page: http://192.168.0.130:8001/   (STOPPED, DRY RUN)
+Running. q = quit, space/e = E-STOP, r = reset, g = START, s = STOP, Ctrl+C = stop.
+
+Ctrl+C: stopping.
+[threaded] exit: interrupt | {'lane_fps': 9.67, 'det_fps': 9.67, 'cam_fps': 30.0, 'ctrl_hz': 20.0, 'period_ms': {'n': 12194, 'mean': 50.0, 'p99': 55.9, 'max': 59.9, 'min': 40.0}, 'overruns': 0, 'tick_ms': {'n': 12195, 'mean': 0.37, 'p99': 0.73, 'max': 6.47, 'min': 0.15}, 'lane_age': {'n': 12192, 'mean': 0.168, 'p99': 0.231, 'max': 0.37, 'min': 0.092}, 'det_age': {'n': 12191, 'mean': 0.129, 'p99': 0.18, 'max': 0.243, 'min': 0.063}, 'lane_latency': {'n': 6077, 'mean': 0.118, 'p99': 0.148, 'max': 0.236, 'min': 0.088}, 'det_latency': {'n': 12191, 'mean': 0.075, 'p99': 0.089, 'max': 0.166, 'min': 0.058}, 'lane_proc_ms': {'n': 6077, 'mean': 100.3, 'p99': 111.1, 'max': 206.0, 'min': 84.4}, 'det_proc_ms': {'n': 6096, 'mean': 74.3, 'p99': 88.3, 'max': 161.1, 'min': 58.4}, 'temp_c': 65.0, 'temp_max': 67.75, 'throttled_seen': '0x0', 'rss_mb': 563.9, 'errors': []}
+[fans] OFF

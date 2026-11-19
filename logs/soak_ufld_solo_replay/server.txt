@@ -1,0 +1,10 @@
+[fans] using gpiochip0
+[fans] ON
+Lane backend: ufld:v2_same
+Logging to /home/veena_pi/self_driving_car/pi_deploy/logs/run_20261116_133548.csv
+Demo page: http://192.168.0.130:8001/   (STOPPED, DRY RUN)
+Running. q = quit, space/e = E-STOP, r = reset, g = START, s = STOP, Ctrl+C = stop.
+
+Ctrl+C: stopping.
+[threaded] exit: interrupt | {'lane_fps': 3.67, 'det_fps': None, 'cam_fps': 30.0, 'ctrl_hz': 20.0, 'period_ms': {'n': 12195, 'mean': 50.0, 'p99': 55.8, 'max': 61.5, 'min': 38.5}, 'overruns': 0, 'tick_ms': {'n': 12196, 'mean': 0.26, 'p99': 0.61, 'max': 5.95, 'min': 0.13}, 'lane_age': {'n': 12190, 'mean': 0.407, 'p99': 0.55, 'max': 0.746, 'min': 0.247}, 'det_age': {'n': 0, 'mean': None, 'p99': None, 'max': None, 'min': None}, 'lane_latency': {'n': 2344, 'mean': 0.277, 'p99': 0.314, 'max': 0.44, 'min': 0.243}, 'det_latency': {'n': 0, 'mean': None, 'p99': None, 'max': None, 'min': None}, 'lane_proc_ms': {'n': 2344, 'mean': 260.1, 'p99': 289.5, 'max': 411.4, 'min': 237.7}, 'det_proc_ms': None, 'temp_c': 66.1, 'temp_max': 68.3, 'throttled_seen': '0x0', 'rss_mb': 339.6, 'errors': []}
+[fans] OFF
