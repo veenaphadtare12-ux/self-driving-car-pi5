@@ -12,7 +12,13 @@ objects, obeys a red/green traffic light and a stop sign. Everything runs **on t
 <!-- VIDEOS -->
 ## Demo
 
-> Videos will be added here: full P7 demo (screen recording of the control page) and a phone video of the car on the track.
+![P1 lane following: one full lap, the car's own camera view with the control-page overlays (4x speed)](docs/p1_lap.gif)
+
+*P1 lane following, first clean full lap (2026-11-16, 4× speed).* This is the car's own camera view as recorded by the
+control page: green dots = UFLD lane points, yellow = target and steering, top line = state and wheel speeds (L/R %).
+
+More videos (full P7 demo screen recording, phone video of the car on the track) and the UFLD models are on the
+[`demo-v1` release](https://github.com/veenaphadtare12-ux/self-driving-car-pi5/releases/tag/demo-v1).
 
 ## How it works
 
